@@ -9,20 +9,12 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>rpc-test</artifactId>
+    <artifactId>rpc-provider</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>rpc-test-scanner</module>
-        <module>rpc-test-provider</module>
+        <module>rpc-provider-common</module>
+        <module>rpc-provider-native</module>
     </modules>
-
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.2</version>
-        </dependency>
-    </dependencies>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
