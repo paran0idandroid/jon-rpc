@@ -13,6 +13,8 @@
         <module>rpc-common</module>
         <module>rpc-test</module>
         <module>rpc-provider</module>
+        <module>rpc-protocol</module>
+        <module>rpc-constants</module>
     </modules>
 
     <properties>
@@ -124,6 +126,12 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>${snakeyaml.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.28</version>
         </dependency>
 
     </dependencies>
