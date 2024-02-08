@@ -1,5 +1,7 @@
 package io.jon.rpc.provider.common.server.base;
 
+import io.jon.rpc.codec.RpcDecoder;
+import io.jon.rpc.codec.RpcEncoder;
 import io.jon.rpc.provider.common.handler.RpcProviderHandler;
 import io.jon.rpc.provider.common.server.api.Server;
 import io.netty.bootstrap.ServerBootstrap;
@@ -47,8 +49,10 @@ public class BaseServer implements Server {
                         @Override
                         protected void initChannel(SocketChannel channel) throws Exception {
                             channel.pipeline()
-                                    .addLast(new StringDecoder())
-                                    .addLast(new StringEncoder())
+//                                    .addLast(new StringDecoder()) //Netty自带
+//                                    .addLast(new StringEncoder()) //Netty自带
+                                    .addLast(new RpcDecoder())
+                                    .addLast(new RpcEncoder())
                                     .addLast(new RpcProviderHandler(handlerMap));
                         }
                     })
