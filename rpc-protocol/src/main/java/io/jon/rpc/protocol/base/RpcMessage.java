@@ -1,7 +1,6 @@
 package io.jon.rpc.protocol.base;
 
 import lombok.Data;
-import lombok.Lombok;
 
 import java.io.Serializable;
 
