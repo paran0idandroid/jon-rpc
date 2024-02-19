@@ -6,8 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class RpcSingleServer extends BaseServer {
-    public RpcSingleServer(String serverAddress, String scanPackage) {
-        super(serverAddress);
+    public RpcSingleServer(String serverAddress, String scanPackage, String reflectType) {
+        super(serverAddress, reflectType);
 
         try{
             this.handlerMap = RpcServiceScanner

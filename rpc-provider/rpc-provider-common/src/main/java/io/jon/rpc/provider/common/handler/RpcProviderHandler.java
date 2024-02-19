@@ -13,6 +13,9 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
+import io.jon.rpc.constants.RpcConstants;
+import net.sf.cglib.reflect.FastClass;
+import net.sf.cglib.reflect.FastMethod;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -34,8 +37,12 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 
     private final Map<String, Object> handlerMap;
 
-    public RpcProviderHandler(Map<String, Object> handlerMap){
+    private final String reflectType;
+
+    public RpcProviderHandler(Map<String, Object> handlerMap, String reflectType){
+
         this.handlerMap = handlerMap;
+        this.reflectType = reflectType;
     }
 
     @Override
@@ -118,6 +125,45 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
                                 String methodName,
                                 Class<?>[] parameterTypes,
                                 Object[] parameters) throws Throwable{
+
+        switch (this.reflectType) {
+
+            case RpcConstants.REFLECT_TYPE_JDK:
+                return this.invokeJDKMethod(
+                        serviceBean,
+                        serviceClass,
+                        methodName,
+                        parameterTypes,
+                        parameters);
+            case RpcConstants.REFLECT_TYPE_CGLIB:
+                return this.invokeCGLibMethod(
+                        serviceBean,
+                        serviceClass,
+                        methodName,
+                        parameterTypes,
+                        parameters);
+            default:
+                throw new IllegalArgumentException("not support reflect type");
+        }
+    }
+
+    private Object invokeCGLibMethod(Object serviceBean,
+                                     Class<?> serviceClass,
+                                     String methodName,
+                                     Class<?>[] parameterTypes,
+                                     Object[] parameters) throws Throwable{
+        log.info("use cglib reflect type to invoke method...");
+        FastClass serviceFastClass = FastClass.create(serviceClass);
+        FastMethod serviceFastMethod = serviceFastClass.getMethod(methodName, parameterTypes);
+        return serviceFastMethod.invoke(serviceBean, parameters);
+    }
+
+    private Object invokeJDKMethod(Object serviceBean,
+                                   Class<?> serviceClass,
+                                   String methodName,
+                                   Class<?>[] parameterTypes,
+                                   Object[] parameters) throws Throwable{
+
         Method method = serviceClass.getMethod(methodName, parameterTypes);
         method.setAccessible(true);
         return method.invoke(serviceBean, parameters);
