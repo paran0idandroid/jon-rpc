@@ -5,26 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.jon.rpc</groupId>
-        <artifactId>jon-rpc</artifactId>
+        <artifactId>rpc-test</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>rpc-test</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>rpc-test-scanner</module>
-        <module>rpc-test-provider</module>
-        <module>rpc-test-consumer</module>
-        <module>rpc-test-api</module>
-    </modules>
-
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.2</version>
-        </dependency>
-    </dependencies>
+    <artifactId>rpc-test-api</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
