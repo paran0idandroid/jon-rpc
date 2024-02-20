@@ -50,7 +50,7 @@ public class RpcConsumer {
         eventLoopGroup.shutdownGracefully();
     }
 
-    public void sendRequest(RpcProtocol<RpcRequest> protocol) throws Exception{
+    public Object sendRequest(RpcProtocol<RpcRequest> protocol) throws Exception{
 
         //TODO 暂时写死，后续在引入注册中心时，从注册中心获取
         String serviceAddress = "127.0.0.1";
@@ -67,7 +67,7 @@ public class RpcConsumer {
             handler = getRpcConsumerHandler(serviceAddress, port);
             handlerMap.put(key, handler);
         }
-        handler.sendRequest(protocol);
+        return handler.sendRequest(protocol);
     }
 
     private RpcConsumerHandler getRpcConsumerHandler(String serviceAddress, int port) throws InterruptedException{

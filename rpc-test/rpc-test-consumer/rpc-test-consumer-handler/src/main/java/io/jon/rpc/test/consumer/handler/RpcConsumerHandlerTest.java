@@ -6,14 +6,16 @@ import io.jon.rpc.protocol.RpcProtocol;
 import io.jon.rpc.protocol.enumeration.RpcType;
 import io.jon.rpc.protocol.header.RpcHeaderFactory;
 import io.jon.rpc.protocol.request.RpcRequest;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class RpcConsumerHandlerTest {
 
     public static void main(String[] args) throws Exception {
 
         RpcConsumer consumer = RpcConsumer.getInstance();
-        consumer.sendRequest(getRpcRequestProtocol());
-        Thread.sleep(2000);
+        Object result = consumer.sendRequest(getRpcRequestProtocol());
+        log.info("从服务消费者获取到的数据===>>>" + result.toString());
         consumer.close();
     }
 
