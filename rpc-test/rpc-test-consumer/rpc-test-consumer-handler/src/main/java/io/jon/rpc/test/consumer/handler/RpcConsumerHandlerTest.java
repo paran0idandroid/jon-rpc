@@ -2,6 +2,7 @@ package io.jon.rpc.test.consumer.handler;
 
 import io.jon.rpc.constants.RpcConstants;
 import io.jon.rpc.consumer.common.RpcConsumer;
+import io.jon.rpc.consumer.common.future.RPCFuture;
 import io.jon.rpc.protocol.RpcProtocol;
 import io.jon.rpc.protocol.enumeration.RpcType;
 import io.jon.rpc.protocol.header.RpcHeaderFactory;
@@ -14,8 +15,8 @@ public class RpcConsumerHandlerTest {
     public static void main(String[] args) throws Exception {
 
         RpcConsumer consumer = RpcConsumer.getInstance();
-        Object result = consumer.sendRequest(getRpcRequestProtocol());
-        log.info("从服务消费者获取到的数据===>>>" + result.toString());
+        RPCFuture future = consumer.sendRequest(getRpcRequestProtocol());
+        log.info("从服务消费者获取到的数据===>>>" + future.get());
         consumer.close();
     }
 
