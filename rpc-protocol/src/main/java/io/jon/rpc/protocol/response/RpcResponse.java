@@ -14,4 +14,7 @@ public class RpcResponse extends RpcMessage {
 
     private Object result;
 
+    public boolean isError() {
+        return error != null;
+    }
 }

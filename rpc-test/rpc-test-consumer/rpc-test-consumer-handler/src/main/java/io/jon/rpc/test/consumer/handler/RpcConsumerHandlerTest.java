@@ -2,6 +2,7 @@ package io.jon.rpc.test.consumer.handler;
 
 import io.jon.rpc.constants.RpcConstants;
 import io.jon.rpc.consumer.common.RpcConsumer;
+import io.jon.rpc.consumer.common.callback.AsyncRPCCallback;
 import io.jon.rpc.consumer.common.context.RpcContext;
 import io.jon.rpc.consumer.common.future.RPCFuture;
 import io.jon.rpc.protocol.RpcProtocol;
@@ -16,12 +17,25 @@ public class RpcConsumerHandlerTest {
     public static void main(String[] args) throws Exception {
 
         RpcConsumer consumer = RpcConsumer.getInstance();
+        RPCFuture future = consumer.sendRequest(getRpcRequestProtocol());
 //        consumer.sendRequest(getRpcRequestProtocol());
 //        RPCFuture future = RpcContext.getContext().getRPCFuture();
-//        RPCFuture future = consumer.sendRequest(getRpcRequestProtocol());
 //        log.info("从服务消费者获取到的数据===>>>" + future.get());
-        consumer.sendRequest(getRpcRequestProtocol());
-        log.info("no return data");
+//        consumer.sendRequest(getRpcRequestProtocol());
+//        log.info("no return data");
+
+        future.addCallback(new AsyncRPCCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                log.info("从服务消费者获取到的数据===>>>" + result);
+            }
+
+            @Override
+            public void onException(Exception e) {
+                log.info("抛出了异常===>>>" + e);
+            }
+        });
+        Thread.sleep(200);
         consumer.close();
     }
 
@@ -38,7 +52,7 @@ public class RpcConsumerHandlerTest {
         request.setParameters(new Object[]{"jon"});
         request.setVersion("1.0.0");
         request.setAsync(false);
-        request.setOneway(true);
+        request.setOneway(false);
         protocol.setBody(request);
         return protocol;
     }

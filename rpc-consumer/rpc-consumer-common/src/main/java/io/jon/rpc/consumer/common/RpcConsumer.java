@@ -3,6 +3,7 @@ package io.jon.rpc.consumer.common;
 import io.jon.rpc.consumer.common.future.RPCFuture;
 import io.jon.rpc.consumer.common.handler.RpcConsumerHandler;
 import io.jon.rpc.consumer.common.initializer.RpcConsumerInitializer;
+import io.jon.rpc.consumer.common.threadpool.ClientThreadPool;
 import io.jon.rpc.protocol.RpcProtocol;
 import io.jon.rpc.protocol.request.RpcRequest;
 import io.netty.bootstrap.Bootstrap;
@@ -49,6 +50,7 @@ public class RpcConsumer {
 
     public void close(){
         eventLoopGroup.shutdownGracefully();
+        ClientThreadPool.shutdown();
     }
 
     public RPCFuture sendRequest(RpcProtocol<RpcRequest> protocol) throws Exception{
