@@ -1,4 +1,4 @@
-package io.jon.rpc.consumer.common.threadpool;
+package io.jon.rpc.threadpool;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;

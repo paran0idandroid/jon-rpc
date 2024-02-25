@@ -2,11 +2,11 @@ package io.jon.rpc.consumer.common;
 
 import io.jon.rpc.consumer.common.handler.RpcConsumerHandler;
 import io.jon.rpc.consumer.common.initializer.RpcConsumerInitializer;
-import io.jon.rpc.consumer.common.threadpool.ClientThreadPool;
 import io.jon.rpc.protocol.RpcProtocol;
 import io.jon.rpc.protocol.request.RpcRequest;
 import io.jon.rpc.proxy.api.consumer.Consumer;
 import io.jon.rpc.proxy.api.future.RPCFuture;
+import io.jon.rpc.threadpool.ClientThreadPool;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;

@@ -5,7 +5,6 @@ import io.jon.rpc.protocol.header.RpcHeaderFactory;
 import io.jon.rpc.protocol.request.RpcRequest;
 import io.jon.rpc.proxy.api.consumer.Consumer;
 import io.jon.rpc.proxy.api.future.RPCFuture;
-import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,10 +12,24 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
-@AllArgsConstructor
 public class ObjectProxy<T> implements InvocationHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjectProxy.class);
+
+    public ObjectProxy(Class<T> clazz, String serviceVersion,
+                       String serviceGroup, long timeout,
+                       Consumer consumer, String serializationType,
+                       int messageType, boolean async, boolean oneway) {
+        this.clazz = clazz;
+        this.serviceVersion = serviceVersion;
+        this.serviceGroup = serviceGroup;
+        this.timeout = timeout;
+        this.consumer = consumer;
+        this.serializationType = serializationType;
+        this.messageType = messageType;
+        this.async = async;
+        this.oneway = oneway;
+    }
 
     // 接口的Class对象
     private Class<T> clazz;

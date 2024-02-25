@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.jon.rpc</groupId>
-        <artifactId>rpc-proxy</artifactId>
+        <artifactId>rpc-test-consumer</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>rpc-proxy-api</artifactId>
+    <artifactId>rpc-test-consumer-native</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -19,13 +19,17 @@
     <dependencies>
         <dependency>
             <groupId>io.jon.rpc</groupId>
-            <artifactId>rpc-protocol</artifactId>
+            <artifactId>rpc-proxy</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.jon.rpc</groupId>
-            <artifactId>rpc-threadpool</artifactId>
+            <artifactId>rpc-consumer-native</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jon.rpc</groupId>
+            <artifactId>rpc-test-provider</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

@@ -20,6 +20,7 @@
         <module>rpc-consumer</module>
         <module>rpc-proxy</module>
         <module>rpc-proxy/rpc-proxy-api</module>
+        <module>rpc-threadpool</module>
     </modules>
 
     <properties>
