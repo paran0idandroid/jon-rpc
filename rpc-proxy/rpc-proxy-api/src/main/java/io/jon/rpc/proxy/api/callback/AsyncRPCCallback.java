@@ -1,4 +1,4 @@
-package io.jon.rpc.consumer.common.callback;
+package io.jon.rpc.proxy.api.callback;
 
 public interface AsyncRPCCallback {
 

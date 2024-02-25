@@ -2,13 +2,12 @@ package io.jon.rpc.test.consumer.handler;
 
 import io.jon.rpc.constants.RpcConstants;
 import io.jon.rpc.consumer.common.RpcConsumer;
-import io.jon.rpc.consumer.common.callback.AsyncRPCCallback;
-import io.jon.rpc.consumer.common.context.RpcContext;
-import io.jon.rpc.consumer.common.future.RPCFuture;
 import io.jon.rpc.protocol.RpcProtocol;
 import io.jon.rpc.protocol.enumeration.RpcType;
 import io.jon.rpc.protocol.header.RpcHeaderFactory;
 import io.jon.rpc.protocol.request.RpcRequest;
+import io.jon.rpc.proxy.api.callback.AsyncRPCCallback;
+import io.jon.rpc.proxy.api.future.RPCFuture;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

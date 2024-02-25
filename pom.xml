@@ -18,6 +18,8 @@
         <module>rpc-serialization</module>
         <module>rpc-codec</module>
         <module>rpc-consumer</module>
+        <module>rpc-proxy</module>
+        <module>rpc-proxy/rpc-proxy-api</module>
     </modules>
 
     <properties>

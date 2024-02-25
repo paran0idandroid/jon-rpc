@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.jon.rpc</groupId>
-        <artifactId>rpc-consumer</artifactId>
+        <artifactId>rpc-proxy</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>rpc-consumer-common</artifactId>
+    <artifactId>rpc-proxy-jdk</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -17,16 +17,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
-        <dependency>
-            <groupId>io.jon.rpc</groupId>
-            <artifactId>rpc-protocol</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jon.rpc</groupId>
-            <artifactId>rpc-codec</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
         <dependency>
             <groupId>io.jon.rpc</groupId>
             <artifactId>rpc-proxy-api</artifactId>

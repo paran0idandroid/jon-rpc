@@ -1,10 +1,10 @@
-package io.jon.rpc.consumer.common.future;
+package io.jon.rpc.proxy.api.future;
 
-import io.jon.rpc.consumer.common.callback.AsyncRPCCallback;
 import io.jon.rpc.consumer.common.threadpool.ClientThreadPool;
 import io.jon.rpc.protocol.RpcProtocol;
 import io.jon.rpc.protocol.request.RpcRequest;
 import io.jon.rpc.protocol.response.RpcResponse;
+import io.jon.rpc.proxy.api.callback.AsyncRPCCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
