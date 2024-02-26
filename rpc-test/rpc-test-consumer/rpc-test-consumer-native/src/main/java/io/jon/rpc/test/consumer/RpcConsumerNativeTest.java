@@ -13,7 +13,8 @@ public class RpcConsumerNativeTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcConsumerNativeTest.class);
 
-    public static void main(String[] args) {
+    @Test
+    public void testSyncInterfaceRpc() throws Exception{
         RpcClient rpcClient = new RpcClient(
                 "1.0.0", "jon", 3000,
                 "jdk", RpcType.REQUEST.getType(),
