@@ -4,6 +4,9 @@ import io.jon.rpc.codec.RpcDecoder;
 import io.jon.rpc.codec.RpcEncoder;
 import io.jon.rpc.provider.common.handler.RpcProviderHandler;
 import io.jon.rpc.provider.common.server.api.Server;
+import io.jon.rpc.registry.api.RegistryService;
+import io.jon.rpc.registry.api.config.RegistryConfig;
+import io.jon.rpc.registry.zookeeper.ZookeeperRegistryService;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -28,7 +31,12 @@ public class BaseServer implements Server {
 
     private final String reflectType;
 
-    public BaseServer(String serverAddress, String reflectType){
+    protected RegistryService registryService;
+
+    public BaseServer(String serverAddress,
+                      String registryAddress,
+                      String registryType,
+                      String reflectType){
         if(!StringUtils.isEmpty(serverAddress)){
             String[] serverArray = serverAddress.split(":");
             this.host = serverArray[0];
@@ -36,6 +44,21 @@ public class BaseServer implements Server {
         }
 
         this.reflectType = reflectType;
+        this.registryService = this.getRegistryService(registryAddress, registryType);
+    }
+
+    private RegistryService getRegistryService(String registryAddress, String registryType) {
+
+        //TODO 后续扩展支持SPI
+        RegistryService registryService = null;
+        try{
+            registryService = new ZookeeperRegistryService();
+            registryService.init(new RegistryConfig(registryAddress, registryType));
+        }catch (Exception e){
+            log.error("RPC Server init error: ", e);
+        }
+
+        return registryService;
     }
 
 
