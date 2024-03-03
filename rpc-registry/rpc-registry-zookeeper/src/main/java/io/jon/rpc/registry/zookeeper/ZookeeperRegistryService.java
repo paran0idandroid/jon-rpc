@@ -1,6 +1,8 @@
 package io.jon.rpc.registry.zookeeper;
 
 import io.jon.rpc.common.helper.RpcServiceHelper;
+import io.jon.rpc.loadbalancer.api.ServiceLoadBalancer;
+import io.jon.rpc.loadbalancer.random.RandomServiceLoadBalancer;
 import io.jon.rpc.protocol.meta.ServiceMeta;
 import io.jon.rpc.registry.api.RegistryService;
 import io.jon.rpc.registry.api.config.RegistryConfig;
@@ -24,6 +26,8 @@ public class ZookeeperRegistryService implements RegistryService {
     public static final String ZK_BASE_PATH = "/jon_rpc";
 
     private ServiceDiscovery serviceDiscovery;
+
+    private ServiceLoadBalancer<ServiceInstance<ServiceMeta>> serviceLoadBalancer;
 
     @Override
     public void register(ServiceMeta serviceMeta) throws Exception {
@@ -63,27 +67,14 @@ public class ZookeeperRegistryService implements RegistryService {
         Collection<ServiceInstance<ServiceMeta>> serviceInstances =
                 serviceDiscovery.queryForInstances(serviceName);
 
-        ServiceInstance<ServiceMeta> instance = this.selectOneServiceInstance(
-                (List<ServiceInstance<ServiceMeta>>) serviceInstances);
+        ServiceInstance<ServiceMeta> instance =
+                serviceLoadBalancer.select((List<ServiceInstance<ServiceMeta>>) serviceInstances, invokerHashCode);
 
         if(instance != null){
             return instance.getPayload();
         }
 
         return null;
-    }
-
-    private ServiceInstance<ServiceMeta> selectOneServiceInstance(
-            List<ServiceInstance<ServiceMeta>> serviceInstances) {
-
-        if(serviceInstances == null || serviceInstances.isEmpty()){
-            return null;
-        }
-
-        Random random = new Random();
-        int index = random.nextInt(serviceInstances.size());
-        return serviceInstances.get(index);
-
     }
 
     @Override
@@ -108,5 +99,7 @@ public class ZookeeperRegistryService implements RegistryService {
                 .basePath(ZK_BASE_PATH)
                 .build();
         this.serviceDiscovery.start();
+
+        this.serviceLoadBalancer = new RandomServiceLoadBalancer<ServiceInstance<ServiceMeta>>();
     }
 }

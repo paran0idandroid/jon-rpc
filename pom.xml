@@ -22,6 +22,7 @@
         <module>rpc-proxy/rpc-proxy-api</module>
         <module>rpc-threadpool</module>
         <module>rpc-registry</module>
+        <module>rpc-loadbalancer-api</module>
     </modules>
 
     <properties>
