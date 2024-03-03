@@ -1,6 +1,7 @@
 package io.jon.rpc.proxy.api.config;
 
 import io.jon.rpc.proxy.api.consumer.Consumer;
+import io.jon.rpc.registry.api.RegistryService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -23,6 +24,8 @@ public class ProxyConfig<T> implements Serializable {
 
     // 超时时间
     private long timeout;
+
+    private RegistryService registryService;
 
     // 服务消费者
     private Consumer consumer;

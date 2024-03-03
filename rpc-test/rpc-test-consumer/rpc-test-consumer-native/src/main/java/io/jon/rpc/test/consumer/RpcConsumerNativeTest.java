@@ -5,6 +5,7 @@ import io.jon.rpc.protocol.enumeration.RpcType;
 import io.jon.rpc.proxy.api.async.IAsyncObjectProxy;
 import io.jon.rpc.proxy.api.future.RPCFuture;
 import io.jon.rpc.test.api.DemoService;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,12 +14,23 @@ public class RpcConsumerNativeTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcConsumerNativeTest.class);
 
+    private RpcClient rpcClient;
+
+    @Before
+    public void initRpcClient(){
+        rpcClient = new RpcClient(
+                "127.0.0.1:2181",
+                "zookeeper",
+                "1.0.0",
+                "jon",
+                3000,
+                "jdk",
+                RpcType.REQUEST.getType(),
+                false,
+                false);
+    }
     @Test
     public void testSyncInterfaceRpc() throws Exception{
-        RpcClient rpcClient = new RpcClient(
-                "1.0.0", "jon", 3000,
-                "jdk", RpcType.REQUEST.getType(),
-                false, false);
 
         DemoService demoService = rpcClient.create(DemoService.class);
         String result = demoService.hello("kevin durant");
@@ -28,10 +40,6 @@ public class RpcConsumerNativeTest {
 
     @Test
     public void testAsyncInterfaceRpc() throws Exception{
-
-        RpcClient rpcClient = new RpcClient("1.0.0", "jon", 3000,
-                "jdk", RpcType.REQUEST.getType(),
-                false, false);
 
         IAsyncObjectProxy demoService = rpcClient.createAsync(DemoService.class);
         RPCFuture future = demoService.call("hello", "westbrook");
