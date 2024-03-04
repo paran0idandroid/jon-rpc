@@ -2,7 +2,6 @@ package io.jon.rpc.provider;
 
 import io.jon.rpc.provider.common.scanner.RpcServiceScanner;
 import io.jon.rpc.provider.common.server.base.BaseServer;
-import io.jon.rpc.registry.api.RegistryService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

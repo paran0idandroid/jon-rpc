@@ -2,8 +2,6 @@ package io.jon.rpc.proxy.jdk;
 
 import io.jon.rpc.proxy.api.BaseProxyFactory;
 import io.jon.rpc.proxy.api.ProxyFactory;
-import io.jon.rpc.proxy.api.consumer.Consumer;
-import io.jon.rpc.proxy.api.object.ObjectProxy;
 
 import java.lang.reflect.Proxy;
 

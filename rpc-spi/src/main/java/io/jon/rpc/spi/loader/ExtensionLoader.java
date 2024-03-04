@@ -99,7 +99,9 @@ public final class ExtensionLoader<T> {
      * @return 泛型实例
      */
     public static <T> T getExtension(final Class<T> clazz, String name){
-        return StringUtils.isEmpty(name) ? getExtensionLoader(clazz).getDefaultSpiClassInstance() : getExtensionLoader(clazz).getSpiClassInstance(name);
+        return StringUtils.isEmpty(name) ?
+                getExtensionLoader(clazz).getDefaultSpiClassInstance() :
+                getExtensionLoader(clazz).getSpiClassInstance(name);
     }
 
     /**
@@ -269,7 +271,8 @@ public final class ExtensionLoader<T> {
 
     private void loadClass(final Map<String, Class<?>> classes,
                            final String name, final String classPath) throws ClassNotFoundException {
-        Class<?> subClass = Objects.nonNull(this.classLoader) ? Class.forName(classPath, true, this.classLoader) : Class.forName(classPath);
+        Class<?> subClass = Objects.nonNull(this.classLoader)
+                ? Class.forName(classPath, true, this.classLoader) : Class.forName(classPath);
         if (!clazz.isAssignableFrom(subClass)) {
             throw new IllegalStateException("load extension resources error," + subClass + " subtype is not of " + clazz);
         }

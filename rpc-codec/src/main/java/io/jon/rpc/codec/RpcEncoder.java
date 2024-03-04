@@ -20,7 +20,7 @@ public class RpcEncoder extends MessageToByteEncoder<RpcProtocol<Object>> implem
         byteBuf.writeByte(header.getStatus());
         byteBuf.writeLong(header.getRequestId());
         String serializationType = header.getSerializationType();
-        Serialization serialization = getJdkSerialization();
+        Serialization serialization = getSerialization(serializationType);
 
         byteBuf.writeBytes(SerializationUtils.paddingString(serializationType).getBytes("UTF-8"));
         byte[] data = serialization.serialize(msg.getBody());
