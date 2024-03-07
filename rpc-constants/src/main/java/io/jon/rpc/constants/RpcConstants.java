@@ -22,10 +22,13 @@ public class RpcConstants {
      */
     public static final String REFLECT_TYPE_CGLIB = "cglib";
 
-
-
     /**
      * jdk序列化
      */
     public static final String SERIALIZATION_JDK = "jdk";
+
+    /**
+     * jdk序列化
+     */
+    public static final String SERIALIZATION_JSON = "json";
 }

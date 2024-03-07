@@ -24,7 +24,7 @@ public class RpcConsumerNativeTest {
                 "1.0.0",
                 "jon",
                 3000,
-                "jdk",
+                "json",
                 RpcType.REQUEST.getType(),
                 false,
                 false);

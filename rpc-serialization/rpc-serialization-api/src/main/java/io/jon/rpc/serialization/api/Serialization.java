@@ -3,7 +3,7 @@ package io.jon.rpc.serialization.api;
 import io.jon.rpc.constants.RpcConstants;
 import io.jon.rpc.spi.annotation.SPI.SPI;
 
-@SPI(RpcConstants.SERIALIZATION_JDK)
+@SPI(RpcConstants.SERIALIZATION_JSON)
 public interface Serialization {
 
     /**
