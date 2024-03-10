@@ -23,8 +23,8 @@ public class RpcConsumerNativeTest {
                 "zookeeper",
                 "1.0.0",
                 "jon",
-                3000,
-                "json",
+                70000,
+                "hessian2",
                 RpcType.REQUEST.getType(),
                 false,
                 false);

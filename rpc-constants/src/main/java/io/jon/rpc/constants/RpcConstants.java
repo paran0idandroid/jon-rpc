@@ -31,4 +31,9 @@ public class RpcConstants {
      * jdk序列化
      */
     public static final String SERIALIZATION_JSON = "json";
+
+    /**
+     * hessian2序列化
+     */
+    public static final String SERIALIZATION_HESSIAN2 = "hessian2";
 }
