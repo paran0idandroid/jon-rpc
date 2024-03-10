@@ -1,0 +1,1 @@
+kryo=io.jon.rpc.serialization.kryo.KryoSerialization
