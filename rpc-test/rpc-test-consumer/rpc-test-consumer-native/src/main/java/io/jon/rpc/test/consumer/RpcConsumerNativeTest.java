@@ -21,7 +21,7 @@ public class RpcConsumerNativeTest {
         rpcClient = new RpcClient(
                 "127.0.0.1:2181",
                 "zookeeper",
-                "cglib",
+                "javassist",
                 "1.0.0",
                 "jon",
                 3000,
