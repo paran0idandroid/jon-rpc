@@ -16,6 +16,7 @@
         <module>rpc-proxy-jdk</module>
         <module>rpc-proxy-cglib</module>
         <module>rpc-proxy-javassist</module>
+        <module>rpc-proxy-bytebuddy</module>
     </modules>
 
     <properties>
