@@ -44,6 +44,17 @@
             <artifactId>rpc-registry-zookeeper</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>io.jon.rpc</groupId>
+            <artifactId>rpc-reflect-jdk</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jon.rpc</groupId>
+            <artifactId>rpc-reflect-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 </project>
