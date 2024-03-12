@@ -71,6 +71,16 @@
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>io.jon.rpc</groupId>
+            <artifactId>rpc-proxy-jdk</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jon.rpc</groupId>
+            <artifactId>rpc-proxy-cglib</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 </project>
