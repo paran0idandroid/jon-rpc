@@ -1,7 +1,9 @@
 package io.jon.rpc.proxy.api;
 
 import io.jon.rpc.proxy.api.config.ProxyConfig;
+import io.jon.rpc.spi.annotation.SPI.SPI;
 
+@SPI
 public interface ProxyFactory {
 
     //获取代理对象

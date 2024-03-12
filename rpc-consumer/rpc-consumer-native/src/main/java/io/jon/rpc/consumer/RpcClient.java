@@ -2,6 +2,7 @@ package io.jon.rpc.consumer;
 
 import io.jon.rpc.common.exception.RegistryException;
 import io.jon.rpc.consumer.common.RpcConsumer;
+import io.jon.rpc.proxy.api.ProxyFactory;
 import io.jon.rpc.proxy.api.async.IAsyncObjectProxy;
 import io.jon.rpc.proxy.api.config.ProxyConfig;
 import io.jon.rpc.proxy.api.object.ObjectProxy;
@@ -9,17 +10,19 @@ import io.jon.rpc.proxy.jdk.JdkProxyFactory;
 import io.jon.rpc.registry.api.RegistryService;
 import io.jon.rpc.registry.api.config.RegistryConfig;
 import io.jon.rpc.registry.zookeeper.ZookeeperRegistryService;
+import io.jon.rpc.spi.loader.ExtensionLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 public class RpcClient {
     public RpcClient(
-            String registryAddress, String registryType,
+            String registryAddress, String registryType, String proxy,
             String serviceVersion, String serviceGroup,
             long timeout, String serializationType,
             int messageType, boolean async, boolean oneway) {
         this.serviceVersion = serviceVersion;
+        this.proxy = proxy;
         this.serviceGroup = serviceGroup;
         this.timeout = timeout;
         this.registryService = getRegistryService(registryAddress, registryType);
@@ -71,17 +74,20 @@ public class RpcClient {
     // 是否单向调用
     private boolean oneway;
 
+    // 动态代理的方式
+    private String proxy;
+
     public <T> T create(Class<T> interfaceClass){
 
-        JdkProxyFactory<T> jdkProxyFactory = new JdkProxyFactory<T>();
-        jdkProxyFactory.init(new ProxyConfig<>(
+        ProxyFactory proxyFactory = ExtensionLoader.getExtension(ProxyFactory.class, proxy);
+        proxyFactory.init(new ProxyConfig<>(
                 interfaceClass,
                 serviceVersion, serviceGroup,
                 timeout, registryService,
                 RpcConsumer.getInstance(),
                 serializationType, messageType,
                 async, oneway));
-        return jdkProxyFactory.getProxy(interfaceClass);
+        return proxyFactory.getProxy(interfaceClass);
     }
 
     public void shutdown(){
