@@ -16,6 +16,7 @@
         <module>rpc-reflect-jdk</module>
         <module>rpc-reflect-cglib</module>
         <module>rpc-reflect-javassist</module>
+        <module>rpc-reflect-bytebuddy</module>
     </modules>
 
     <properties>
