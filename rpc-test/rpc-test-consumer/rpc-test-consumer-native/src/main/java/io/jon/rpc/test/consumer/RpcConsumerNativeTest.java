@@ -25,7 +25,7 @@ public class RpcConsumerNativeTest {
                 "1.0.0",
                 "jon",
                 3000,
-                "protostuff",
+                "fst",
                 RpcType.REQUEST.getType(),
                 false,
                 false);

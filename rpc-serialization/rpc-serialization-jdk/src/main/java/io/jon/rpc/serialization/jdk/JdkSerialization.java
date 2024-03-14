@@ -34,7 +34,7 @@ public class JdkSerialization implements Serialization {
             // 这里将其连接到前面创建的ByteArrayOutputStream，以便将序列化的数据写入到内存中的字节数组。
             ObjectOutputStream out = new ObjectOutputStream(os);
             // 使用ObjectOutputStream的writeObject方法将指定的对象obj序列化
-            // 并将序列化后的字节写入连接的ByteArrayOutputStream中。
+            // 并将序列化后的字节写入连接的ByteArrayOutputStream中
             out.writeObject(obj);
             return os.toByteArray();
         }catch (IOException e){
@@ -51,8 +51,11 @@ public class JdkSerialization implements Serialization {
             throw new SerializerException("deserialize data is null");
         }
         try{
+            // 如果 data 不为空，接下来创建一个 ByteArrayInputStream 对象 is，用于从提供的字节数组 data 中读取数据
             ByteArrayInputStream is = new ByteArrayInputStream(data);
+            // 创建一个 ObjectInputStream 对象 in，用于从 ByteArrayInputStream 中读取对象，这个对象输入流将用于反序列化操作
             ObjectInputStream in = new ObjectInputStream(is);
+            // 调用ObjectInputStream的 readObject()方法 来读取并反序列化对象
             return (T) in.readObject();
         }catch (Exception e){
             throw new SerializerException(e.getMessage(), e);

@@ -21,6 +21,8 @@ public class ProtoStuffSerialization implements Serialization {
 
     private Map<Class<?>, Schema<?>> cachedSchema = new ConcurrentHashMap<>();
 
+    // 创建了一个 ObjenesisStd 对象，并根据需要启用了缓存
+    // 通过 objenesis 对象，可以在需要实例化对象时，直接实例化而无需调用对象的构造函数
     private ObjenesisStd objenesis = new ObjenesisStd(true);
 
 
@@ -44,10 +46,14 @@ public class ProtoStuffSerialization implements Serialization {
      * 应当尽量确保类型转换是安全的，以避免在运行时出现类型相关的错误
      */
     @SuppressWarnings("unchecked")
+    // Schema 在 Protostuff 库中用于描述数据结构和序列化格式的信息
     private <T> Schema<T> getSchema(Class<T> cls){
 
+        // 首先尝试从缓存的 Schema Map 中获取给定类 cls 的 Schema 对象
+        // cachedSchema 是一个 Map，用于缓存类对象和对应的 Schema 对象的映射关系
         Schema<T> schema = (Schema<T>) cachedSchema.get(cls);
         if(schema == null){
+            // 使用 RuntimeSchema 的静态方法 createFrom(cls) 来创建给定类 cls 的 Schema 对象
             schema = RuntimeSchema.createFrom(cls);
             if(schema != null){
                 cachedSchema.put(cls, schema);
@@ -66,9 +72,15 @@ public class ProtoStuffSerialization implements Serialization {
         }
 
         Class<T> cls = (Class<T>) obj.getClass();
+        // 用于临时存储序列化过程中产生的字节数据
+        // LinkedBuffer 是 Protostuff 库中的一个缓冲区实现
+        // 它能够动态地分配内存，并在序列化完成后释放
         LinkedBuffer buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
         try{
             Schema<T> schema = getSchema(cls);
+
+            // 将对象 obj 使用给定的 Schema 对象 schema 进行序列化 并将序列化后的字节数组返回
+            // buffer 参数用于存储序列化过程中产生的字节数据，以减少内存分配和复制操作，提高性能
             return ProtostuffIOUtil.toByteArray(obj, schema, buffer);
         }catch (Exception e){
             throw new SerializerException(e.getMessage(), e);
@@ -87,6 +99,9 @@ public class ProtoStuffSerialization implements Serialization {
         try{
             T message = (T) objenesis.newInstance(cls);
             Schema<T> schema = getSchema(cls);
+            // 将字节数组 data 中的数据合并到对象 message 中
+            // 这个方法会根据提供的 Schema 对象 schema
+            // 将字节数组中的数据解析并填充到对象 message 的对应属性中
             ProtostuffIOUtil.mergeFrom(data, message, schema);
             return message;
         }catch (Exception e){
