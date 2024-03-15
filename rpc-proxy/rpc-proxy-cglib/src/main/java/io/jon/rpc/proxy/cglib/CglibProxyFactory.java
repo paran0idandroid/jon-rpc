@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
-
+@SuppressWarnings("unchecked")
 @SPIClass
 public class CglibProxyFactory<T> extends BaseProxyFactory<T> implements ProxyFactory {
     private final Logger logger = LoggerFactory.getLogger(CglibProxyFactory.class);
