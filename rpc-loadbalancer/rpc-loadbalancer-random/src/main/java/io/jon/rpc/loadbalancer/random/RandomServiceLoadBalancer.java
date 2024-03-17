@@ -1,12 +1,14 @@
 package io.jon.rpc.loadbalancer.random;
 
 import io.jon.rpc.loadbalancer.api.ServiceLoadBalancer;
+import io.jon.rpc.spi.annotation.SPIClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Random;
 
+@SPIClass
 public class RandomServiceLoadBalancer<T> implements ServiceLoadBalancer<T> {
 
     private final Logger logger = LoggerFactory.getLogger(RandomServiceLoadBalancer.class);

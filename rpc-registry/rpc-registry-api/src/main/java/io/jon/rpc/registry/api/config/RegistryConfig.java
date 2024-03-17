@@ -16,4 +16,6 @@ public class RegistryConfig implements Serializable {
     private String registryAddr;
     //注册类型
     private String registryType;
+    //负载均衡类型
+    private String registryLoadBalanceType;
 }

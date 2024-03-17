@@ -28,7 +28,8 @@ public class RpcConsumerNativeTest {
                 "fst",
                 RpcType.REQUEST.getType(),
                 false,
-                false);
+                false,
+                "random");
     }
     @Test
     public void testSyncInterfaceRpc() throws Exception{

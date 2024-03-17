@@ -2,10 +2,10 @@ package io.jon.rpc.registry.zookeeper;
 
 import io.jon.rpc.common.helper.RpcServiceHelper;
 import io.jon.rpc.loadbalancer.api.ServiceLoadBalancer;
-import io.jon.rpc.loadbalancer.random.RandomServiceLoadBalancer;
 import io.jon.rpc.protocol.meta.ServiceMeta;
 import io.jon.rpc.registry.api.RegistryService;
 import io.jon.rpc.registry.api.config.RegistryConfig;
+import io.jon.rpc.spi.loader.ExtensionLoader;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -99,6 +99,9 @@ public class ZookeeperRegistryService implements RegistryService {
                 .build();
         this.serviceDiscovery.start();
 
-        this.serviceLoadBalancer = new RandomServiceLoadBalancer<ServiceInstance<ServiceMeta>>();
+        this.serviceLoadBalancer = ExtensionLoader.getExtension(
+                ServiceLoadBalancer.class,
+                registryConfig.getRegistryLoadBalanceType()
+        );
     }
 }

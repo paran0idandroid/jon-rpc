@@ -7,9 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RpcSingleServer extends BaseServer {
     public RpcSingleServer(String serverAddress, String registryAddress,
-                           String registryType, String scanPackage, String reflectType) {
+                           String registryType, String scanPackage, String reflectType,
+                           String registryLoadBalanceType) {
 
-        super(serverAddress,registryAddress,registryType,reflectType);
+        super(serverAddress,registryAddress,registryType,reflectType,registryLoadBalanceType);
 
         try{
             this.handlerMap = RpcServiceScanner

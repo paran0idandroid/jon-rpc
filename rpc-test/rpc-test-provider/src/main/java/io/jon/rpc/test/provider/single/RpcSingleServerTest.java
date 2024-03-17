@@ -12,7 +12,8 @@ public class RpcSingleServerTest {
                 "127.0.0.1:2181",
                 "zookeeper",
                 "io.jon.rpc.test",
-                "asm");
+                "asm",
+                "random");
         singleServer.startNettyServer();
     }
 }

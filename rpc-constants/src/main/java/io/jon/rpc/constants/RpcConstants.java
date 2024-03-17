@@ -36,4 +36,9 @@ public class RpcConstants {
      * hessian2序列化
      */
     public static final String SERIALIZATION_HESSIAN2 = "hessian2";
+
+    /**
+     * 基于随机算法的负载均衡
+     */
+    public static final String SERVICE_LOAD_BALANCER_RANDOM = "random";
 }
