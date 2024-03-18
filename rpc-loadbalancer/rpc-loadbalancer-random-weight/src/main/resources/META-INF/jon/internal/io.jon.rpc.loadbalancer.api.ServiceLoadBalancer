@@ -1,0 +1,1 @@
+randomweight=io.jon.rpc.loadbalancer.random.weight.RandomWeightServiceLoadBalancer
