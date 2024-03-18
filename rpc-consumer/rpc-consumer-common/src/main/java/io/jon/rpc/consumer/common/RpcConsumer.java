@@ -1,6 +1,7 @@
 package io.jon.rpc.consumer.common;
 
 import io.jon.rpc.common.helper.RpcServiceHelper;
+import io.jon.rpc.common.ip.IpUtils;
 import io.jon.rpc.consumer.common.handler.RpcConsumerHandler;
 import io.jon.rpc.consumer.common.helper.RpcConsumerHandlerHelper;
 import io.jon.rpc.consumer.common.initializer.RpcConsumerInitializer;
@@ -30,11 +31,13 @@ public class RpcConsumer implements Consumer {
     private final Bootstrap bootstrap;
     private final EventLoopGroup eventLoopGroup;
     private static volatile RpcConsumer instance;
+    private final String localIp;
 
     private static Map<String, RpcConsumerHandler> handlerMap = new ConcurrentHashMap<>();
 
     private RpcConsumer() {
 
+        localIp = IpUtils.getLocalHostIp();
         bootstrap = new Bootstrap();
         eventLoopGroup = new NioEventLoopGroup();
         bootstrap.group(eventLoopGroup)
@@ -75,7 +78,7 @@ public class RpcConsumer implements Consumer {
         int invokerHashCode = (parameters == null || parameters.length <= 0)
                 ? serviceKey.hashCode() : parameters[0].hashCode();
 
-        ServiceMeta serviceMeta = registryService.discovery(serviceKey, invokerHashCode);
+        ServiceMeta serviceMeta = registryService.discovery(serviceKey, invokerHashCode, localIp);
         if(serviceMeta != null){
             RpcConsumerHandler handler = RpcConsumerHandlerHelper.get(serviceMeta);
 

@@ -41,7 +41,8 @@ public class ZookeeperRegistryTest {
     public void testDiscovery() throws Exception{
         this.registryService.discovery(
                 RegistryService.class.getName(),
-                "jon".hashCode()
+                "jon".hashCode(),
+                ""
         );
     }
 
