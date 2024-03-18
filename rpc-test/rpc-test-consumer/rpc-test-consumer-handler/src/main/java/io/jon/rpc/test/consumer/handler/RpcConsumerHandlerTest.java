@@ -65,7 +65,7 @@ public class RpcConsumerHandlerTest {
         return protocol;
     }
 
-    private static RegistryService getRegistryService(String registryAddress, String registryType) {
+    private static RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
 
         if(StringUtils.isEmpty(registryType)){
             throw new IllegalArgumentException("registry type is null");
@@ -74,7 +74,7 @@ public class RpcConsumerHandlerTest {
         //TODO SPI扩展
         ZookeeperRegistryService registryService = new ZookeeperRegistryService();
         try{
-            registryService.init(new RegistryConfig(registryAddress, registryType));
+            registryService.init(new RegistryConfig(registryAddress, registryType, registryLoadBalanceType));
         }catch (Exception e){
             log.error("RpcClient init registry service throws exception:{}", e);
             throw new RegistryException(e.getMessage(), e);
