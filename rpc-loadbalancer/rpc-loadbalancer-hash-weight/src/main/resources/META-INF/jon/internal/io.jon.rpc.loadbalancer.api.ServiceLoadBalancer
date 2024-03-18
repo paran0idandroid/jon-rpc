@@ -1,0 +1,1 @@
+hashweight=io.jon.rpc.loadbalancer.hash.weight.HashWeightServiceLoadBalancer
