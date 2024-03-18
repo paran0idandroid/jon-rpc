@@ -15,7 +15,7 @@ public class ZookeeperRegistryTest {
     @Before
     public void init() throws Exception{
 
-        RegistryConfig registryConfig = new RegistryConfig("127.0.0.1:2181", "zookeeper");
+        RegistryConfig registryConfig = new RegistryConfig("127.0.0.1:2181", "zookeeper", "robin");
         this.registryService = new ZookeeperRegistryService();
         this.registryService.init(registryConfig);
         this.serviceMeta = new ServiceMeta(

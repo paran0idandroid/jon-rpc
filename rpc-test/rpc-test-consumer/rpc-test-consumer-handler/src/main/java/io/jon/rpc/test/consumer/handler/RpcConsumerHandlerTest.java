@@ -25,7 +25,8 @@ public class RpcConsumerHandlerTest {
                 getRpcRequestProtocol(),
                 getRegistryService(
                         "127.0.0.1:2181",
-                        "zookeeper"));
+                        "zookeeper",
+                        "robin"));
 //        consumer.sendRequest(getRpcRequestProtocol());
 //        RPCFuture future = RpcContext.getContext().getRPCFuture();
 //        log.info("从服务消费者获取到的数据===>>>" + future.get());
