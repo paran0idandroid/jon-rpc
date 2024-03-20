@@ -29,7 +29,7 @@ public class RpcConsumerNativeTest {
                 RpcType.REQUEST.getType(),
                 false,
                 false,
-                "enhanced_robinweight");
+                "enhanced_hashweight");
     }
     @Test
     public void testSyncInterfaceRpc() throws Exception{
