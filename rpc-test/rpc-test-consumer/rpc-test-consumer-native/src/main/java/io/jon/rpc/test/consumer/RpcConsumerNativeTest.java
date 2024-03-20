@@ -29,7 +29,7 @@ public class RpcConsumerNativeTest {
                 RpcType.REQUEST.getType(),
                 false,
                 false,
-                "enhanced_zkconsistenthash");
+                "enhanced_leastconnections");
     }
     @Test
     public void testSyncInterfaceRpc() throws Exception{
