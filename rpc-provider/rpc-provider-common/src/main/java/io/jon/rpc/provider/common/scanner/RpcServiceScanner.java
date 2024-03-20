@@ -3,6 +3,7 @@ package io.jon.rpc.provider.common.scanner;
 import io.jon.rpc.annotation.RpcService;
 import io.jon.rpc.common.helper.RpcServiceHelper;
 import io.jon.rpc.common.scanner.ClassScanner;
+import io.jon.rpc.constants.RpcConstants;
 import io.jon.rpc.protocol.meta.ServiceMeta;
 import io.jon.rpc.registry.api.RegistryService;
 import org.slf4j.Logger;
@@ -43,7 +44,8 @@ public class RpcServiceScanner extends ClassScanner {
                             rpcService.version(),
                             host,
                             port,
-                            rpcService.group()
+                            rpcService.group(),
+                            getWeight(rpcService.weight())
                     );
 
                     registryService.register(serviceMeta);
@@ -77,5 +79,19 @@ public class RpcServiceScanner extends ClassScanner {
             serviceName = rpcService.interfaceClassName();
         }
         return serviceName;
+    }
+
+    /**
+     * 将传入的服务权重范围限制在1~100
+     */
+    private static int getWeight(int weight){
+
+        if (weight < RpcConstants.SERVICE_WEIGHT_MIN){
+            weight = RpcConstants.SERVICE_WEIGHT_MIN;
+        }
+        if (weight > RpcConstants.SERVICE_WEIGHT_MAX){
+            weight = RpcConstants.SERVICE_WEIGHT_MAX;
+        }
+        return weight;
     }
 }

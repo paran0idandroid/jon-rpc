@@ -23,5 +23,7 @@ public class ServiceMeta implements Serializable {
     private int servicePort;
     //服务分组
     private String serviceGroup;
+    //服务权重
+    private int weight;
 
 }

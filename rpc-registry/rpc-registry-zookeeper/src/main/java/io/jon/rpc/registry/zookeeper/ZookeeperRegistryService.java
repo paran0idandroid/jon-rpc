@@ -1,7 +1,9 @@
 package io.jon.rpc.registry.zookeeper;
 
 import io.jon.rpc.common.helper.RpcServiceHelper;
+import io.jon.rpc.constants.RpcConstants;
 import io.jon.rpc.loadbalancer.api.ServiceLoadBalancer;
+import io.jon.rpc.loadbalancer.helper.ServiceLoadBalancerHelper;
 import io.jon.rpc.protocol.meta.ServiceMeta;
 import io.jon.rpc.registry.api.RegistryService;
 import io.jon.rpc.registry.api.config.RegistryConfig;
@@ -27,6 +29,7 @@ public class ZookeeperRegistryService implements RegistryService {
     private ServiceDiscovery serviceDiscovery;
 
     private ServiceLoadBalancer<ServiceInstance<ServiceMeta>> serviceLoadBalancer;
+    private ServiceLoadBalancer<ServiceMeta> serviceEnhancedLoadBalancer;
 
     @Override
     public void register(ServiceMeta serviceMeta) throws Exception {
@@ -66,14 +69,13 @@ public class ZookeeperRegistryService implements RegistryService {
         Collection<ServiceInstance<ServiceMeta>> serviceInstances =
                 serviceDiscovery.queryForInstances(serviceName);
 
-        ServiceInstance<ServiceMeta> instance =
-                serviceLoadBalancer.select((List<ServiceInstance<ServiceMeta>>) serviceInstances, invokerHashCode, sourceIp);
-
-        if(instance != null){
-            return instance.getPayload();
+        if(serviceLoadBalancer != null){
+            return getServiceMetaInstance(invokerHashCode, sourceIp,
+                    (List<ServiceInstance<ServiceMeta>>) serviceInstances);
         }
-
-        return null;
+        return this.serviceEnhancedLoadBalancer.select(
+                ServiceLoadBalancerHelper.getServiceMetaList(
+                        (List<ServiceInstance<ServiceMeta>>) serviceInstances), invokerHashCode, sourceIp);
     }
 
     @Override
@@ -99,9 +101,31 @@ public class ZookeeperRegistryService implements RegistryService {
                 .build();
         this.serviceDiscovery.start();
 
-        this.serviceLoadBalancer = ExtensionLoader.getExtension(
-                ServiceLoadBalancer.class,
-                registryConfig.getRegistryLoadBalanceType()
-        );
+
+        //增强型负载均衡策略
+        if(registryConfig
+                .getRegistryLoadBalanceType()
+                .toLowerCase()
+                .contains(RpcConstants.SERVICE_ENHANCED_LOAD_BALANCER_PREFIX)){
+            this.serviceEnhancedLoadBalancer =
+                    ExtensionLoader.getExtension(
+                            ServiceLoadBalancer.class,
+                            registryConfig.getRegistryLoadBalanceType());
+        }else{
+
+            this.serviceLoadBalancer = ExtensionLoader.getExtension(
+                    ServiceLoadBalancer.class,
+                    registryConfig.getRegistryLoadBalanceType()
+            );
+        }
+    }
+
+    private ServiceMeta getServiceMetaInstance(int invokerHashCode, String sourceIp, List<ServiceInstance<ServiceMeta>> serviceInstances){
+
+        ServiceInstance<ServiceMeta> instance = this.serviceLoadBalancer.select(serviceInstances, invokerHashCode, sourceIp);
+        if(instance != null){
+            return instance.getPayload();
+        }
+        return null;
     }
 }
