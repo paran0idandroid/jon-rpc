@@ -7,6 +7,7 @@ import io.jon.rpc.loadbalancer.helper.ServiceLoadBalancerHelper;
 import io.jon.rpc.protocol.meta.ServiceMeta;
 import io.jon.rpc.registry.api.RegistryService;
 import io.jon.rpc.registry.api.config.RegistryConfig;
+import io.jon.rpc.spi.annotation.SPIClass;
 import io.jon.rpc.spi.loader.ExtensionLoader;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -15,11 +16,14 @@ import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;
 import org.apache.curator.x.discovery.ServiceInstance;
 import org.apache.curator.x.discovery.details.JsonInstanceSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+@SPIClass
 public class ZookeeperRegistryService implements RegistryService {
 
     public static final int BASE_SLEEP_TIME_MS = 1000;
@@ -31,8 +35,11 @@ public class ZookeeperRegistryService implements RegistryService {
     private ServiceLoadBalancer<ServiceInstance<ServiceMeta>> serviceLoadBalancer;
     private ServiceLoadBalancer<ServiceMeta> serviceEnhancedLoadBalancer;
 
+    private final Logger logger = LoggerFactory.getLogger(ZookeeperRegistryService.class);
     @Override
     public void register(ServiceMeta serviceMeta) throws Exception {
+
+        logger.info("=======注册实例到zookeeper注册中心=======");
         ServiceInstance<ServiceMeta> serviceInstance = ServiceInstance
                 .<ServiceMeta>builder()
                 .name(RpcServiceHelper.buildServiceKey(
@@ -66,6 +73,7 @@ public class ZookeeperRegistryService implements RegistryService {
     @Override
     public ServiceMeta discovery(String serviceName, int invokerHashCode, String sourceIp) throws Exception {
 
+        logger.info("=======从zookeeper注册中心发现实例=======");
         Collection<ServiceInstance<ServiceMeta>> serviceInstances =
                 serviceDiscovery.queryForInstances(serviceName);
 

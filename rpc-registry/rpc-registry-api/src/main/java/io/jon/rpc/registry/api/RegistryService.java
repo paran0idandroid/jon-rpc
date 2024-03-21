@@ -2,9 +2,11 @@ package io.jon.rpc.registry.api;
 
 import io.jon.rpc.protocol.meta.ServiceMeta;
 import io.jon.rpc.registry.api.config.RegistryConfig;
+import io.jon.rpc.spi.annotation.SPI.SPI;
 
 import java.io.IOException;
 
+@SPI
 public interface RegistryService {
 
     /**
