@@ -6,7 +6,6 @@ import io.jon.rpc.provider.common.handler.RpcProviderHandler;
 import io.jon.rpc.provider.common.server.api.Server;
 import io.jon.rpc.registry.api.RegistryService;
 import io.jon.rpc.registry.api.config.RegistryConfig;
-import io.jon.rpc.registry.zookeeper.ZookeeperRegistryService;
 import io.jon.rpc.spi.loader.ExtensionLoader;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;

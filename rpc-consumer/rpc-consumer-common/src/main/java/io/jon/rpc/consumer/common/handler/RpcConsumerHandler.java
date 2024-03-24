@@ -1,7 +1,6 @@
 package io.jon.rpc.consumer.common.handler;
 
 import com.alibaba.fastjson.JSONObject;
-import io.jon.rpc.constants.RpcConstants;
 import io.jon.rpc.consumer.common.context.RpcContext;
 import io.jon.rpc.protocol.RpcProtocol;
 import io.jon.rpc.protocol.enumeration.RpcType;
@@ -80,8 +79,8 @@ public class RpcConsumerHandler extends
 
         RpcHeader header = protocol.getHeader();
 
-        // 心跳消息
-        if(header.getMsgType() == (byte) RpcType.HEARTBEAT.getType()){
+        // 处理provider发送过来到consumer的心跳消息
+        if(header.getMsgType() == (byte) RpcType.HEARTBEAT_TO_CONSUMER.getType()){
             this.handlerHeartbeatMessage(protocol);
         }else if(header.getMsgType() == (byte) RpcType.RESPONSE.getType()){
             // 响应消息

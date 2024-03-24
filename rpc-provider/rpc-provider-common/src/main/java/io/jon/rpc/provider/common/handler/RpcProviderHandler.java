@@ -16,10 +16,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.cglib.reflect.FastClass;
-import net.sf.cglib.reflect.FastMethod;
 
-import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
@@ -88,8 +85,8 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
         RpcProtocol<RpcResponse> responseRpcProtocol = null;
         RpcHeader header = protocol.getHeader();
 
-        // 心跳类型消息
-        if(header.getMsgType() == (byte) RpcType.HEARTBEAT.getType()){
+        // 处理consumer发送到provider的心跳类型消息
+        if(header.getMsgType() == (byte) RpcType.HEARTBEAT_FROM_CONSUMER.getType()){
             responseRpcProtocol = handlerHeartbeatMessage(protocol, header);
         }else if(header.getMsgType() == (byte) RpcType.REQUEST.getType()){
             // 请求类型消息
@@ -124,7 +121,8 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 
     private RpcProtocol<RpcResponse> handlerHeartbeatMessage(RpcProtocol<RpcRequest> protocol, RpcHeader header) {
 
-        header.setMsgType((byte) RpcType.HEARTBEAT.getType());
+        // 处理发送给consumer的心跳信息
+        header.setMsgType((byte) RpcType.HEARTBEAT_TO_CONSUMER.getType());
         RpcRequest request = protocol.getBody();
         RpcProtocol<RpcResponse> responseRpcProtocol = new RpcProtocol<>();
         RpcResponse response = new RpcResponse();

@@ -6,7 +6,6 @@ import io.jon.rpc.proxy.api.ProxyFactory;
 import io.jon.rpc.proxy.api.async.IAsyncObjectProxy;
 import io.jon.rpc.proxy.api.config.ProxyConfig;
 import io.jon.rpc.proxy.api.object.ObjectProxy;
-import io.jon.rpc.proxy.jdk.JdkProxyFactory;
 import io.jon.rpc.registry.api.RegistryService;
 import io.jon.rpc.registry.api.config.RegistryConfig;
 import io.jon.rpc.registry.zookeeper.ZookeeperRegistryService;
