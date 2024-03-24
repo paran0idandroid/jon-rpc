@@ -1,8 +1,10 @@
 package io.jon.rpc.consumer.common.handler;
 
 import com.alibaba.fastjson.JSONObject;
+import io.jon.rpc.constants.RpcConstants;
 import io.jon.rpc.consumer.common.context.RpcContext;
 import io.jon.rpc.protocol.RpcProtocol;
+import io.jon.rpc.protocol.enumeration.RpcType;
 import io.jon.rpc.protocol.header.RpcHeader;
 import io.jon.rpc.protocol.request.RpcRequest;
 import io.jon.rpc.protocol.response.RpcResponse;
@@ -61,15 +63,44 @@ public class RpcConsumerHandler extends
 
         logger.info("服务消费者接收到的数据===>>>{}", JSONObject.toJSONString(protocol));
 
-        RpcHeader header = protocol.getHeader();
-        long requestId = header.getRequestId();
-//        pendingResponse.put(requestId, protocol);
+        this.handlerMessage(protocol);
 
+//        RpcHeader header = protocol.getHeader();
+//        long requestId = header.getRequestId();
+////        pendingResponse.put(requestId, protocol);
+//
+//        RPCFuture rpcFuture = pendingRpc.remove(requestId);
+//        if(rpcFuture != null){
+//            // 将服务提供者返回来的数据protocol设置到rpcFuture中
+//            rpcFuture.done(protocol);
+//        }
+    }
+
+    private void handlerMessage(RpcProtocol<RpcResponse> protocol) {
+
+        RpcHeader header = protocol.getHeader();
+
+        // 心跳消息
+        if(header.getMsgType() == (byte) RpcType.HEARTBEAT.getType()){
+            this.handlerHeartbeatMessage(protocol);
+        }else if(header.getMsgType() == (byte) RpcType.RESPONSE.getType()){
+            // 响应消息
+            this.handlerResponseMessage(protocol, header);
+        }
+    }
+
+    private void handlerResponseMessage(RpcProtocol<RpcResponse> protocol, RpcHeader header) {
+
+        long requestId = header.getRequestId();
         RPCFuture rpcFuture = pendingRpc.remove(requestId);
         if(rpcFuture != null){
-            // 将服务提供者返回来的数据protocol设置到rpcFuture中
             rpcFuture.done(protocol);
         }
+    }
+
+    private void handlerHeartbeatMessage(RpcProtocol<RpcResponse> protocol) {
+
+        logger.info("receive service provider heartbeat message:{}", protocol.getBody().getResult());
     }
 
     /**

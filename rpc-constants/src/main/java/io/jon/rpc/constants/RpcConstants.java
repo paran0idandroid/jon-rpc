@@ -56,4 +56,14 @@ public class RpcConstants {
      * 增强型负载均衡前缀
      */
     public static final String SERVICE_ENHANCED_LOAD_BALANCER_PREFIX = "enhanced_";
+
+    /**
+     * 心跳ping消息
+     */
+    public static final String HEARTBEAT_PING = "ping";
+
+    /**
+     * 心跳pong消息
+     */
+    public static final String HEARTBEAT_PONG = "pong";
 }
