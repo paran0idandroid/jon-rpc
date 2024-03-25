@@ -27,9 +27,6 @@ public class RpcConsumerHandler extends
 
     private volatile Channel channel;
     private SocketAddress remotePeer;
-
-    //存储请求ID与RpcResponse协议的映射关系
-//    private Map<Long, RpcProtocol<RpcResponse>> pendingResponse = new ConcurrentHashMap<>();
     private Map<Long, RPCFuture> pendingRpc = new ConcurrentHashMap<>();
     public Channel getChannel(){
         return channel;
@@ -63,16 +60,6 @@ public class RpcConsumerHandler extends
         logger.info("服务消费者接收到的数据===>>>{}", JSONObject.toJSONString(protocol));
 
         this.handlerMessage(protocol);
-
-//        RpcHeader header = protocol.getHeader();
-//        long requestId = header.getRequestId();
-////        pendingResponse.put(requestId, protocol);
-//
-//        RPCFuture rpcFuture = pendingRpc.remove(requestId);
-//        if(rpcFuture != null){
-//            // 将服务提供者返回来的数据protocol设置到rpcFuture中
-//            rpcFuture.done(protocol);
-//        }
     }
 
     private void handlerMessage(RpcProtocol<RpcResponse> protocol) {
@@ -98,8 +85,12 @@ public class RpcConsumerHandler extends
     }
 
     private void handlerHeartbeatMessage(RpcProtocol<RpcResponse> protocol) {
-
-        logger.info("receive service provider heartbeat message:{}", protocol.getBody().getResult());
+        // 消费者handler 接收从 服务提供者 传来的心跳信息
+        logger.info(
+                "receive service provider heartbeat message" +
+                ", the provider is:{}, the heart beat message is:{}",
+                channel.remoteAddress(),
+                protocol.getBody().getResult());
     }
 
     /**

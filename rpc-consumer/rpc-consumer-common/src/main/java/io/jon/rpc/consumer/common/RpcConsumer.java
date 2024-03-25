@@ -5,6 +5,7 @@ import io.jon.rpc.common.ip.IpUtils;
 import io.jon.rpc.consumer.common.handler.RpcConsumerHandler;
 import io.jon.rpc.consumer.common.helper.RpcConsumerHandlerHelper;
 import io.jon.rpc.consumer.common.initializer.RpcConsumerInitializer;
+import io.jon.rpc.consumer.common.manager.ConsumerConnectionManager;
 import io.jon.rpc.loadbalancer.context.ConnectionsContext;
 import io.jon.rpc.protocol.RpcProtocol;
 import io.jon.rpc.protocol.meta.ServiceMeta;
@@ -24,6 +25,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 public class RpcConsumer implements Consumer {
@@ -33,8 +37,10 @@ public class RpcConsumer implements Consumer {
     private final EventLoopGroup eventLoopGroup;
     private static volatile RpcConsumer instance;
     private final String localIp;
-
     private static Map<String, RpcConsumerHandler> handlerMap = new ConcurrentHashMap<>();
+
+    // 使用定时任务线程池向服务提供者定时发送心跳数据
+    private ScheduledExecutorService executorService;
 
     private RpcConsumer() {
 
@@ -44,6 +50,7 @@ public class RpcConsumer implements Consumer {
         bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
                 .handler(new RpcConsumerInitializer());
+        this.startHeartbeat();
     }
 
     public static RpcConsumer getInstance(){
@@ -115,5 +122,21 @@ public class RpcConsumer implements Consumer {
         });
 
         return channelFuture.channel().pipeline().get(RpcConsumerHandler.class);
+    }
+
+    private void startHeartbeat(){
+
+        executorService = Executors.newScheduledThreadPool(2);
+
+        // 扫描并处理所有不活跃的连接
+        executorService.scheduleAtFixedRate(() -> {
+            logger.info("=======scanNotActiveChannel=======");
+            ConsumerConnectionManager.scanNotActiveChannel();
+        }, 10, 30, TimeUnit.SECONDS);
+
+        executorService.scheduleAtFixedRate(()->{
+            logger.info("=============broadcastPingMessageFromConsumer============");
+            ConsumerConnectionManager.broadcastPingMessageFromConsumer();
+        }, 3, 60, TimeUnit.SECONDS);
     }
 }
