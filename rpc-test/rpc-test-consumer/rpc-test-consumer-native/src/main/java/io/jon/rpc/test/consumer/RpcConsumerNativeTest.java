@@ -30,7 +30,9 @@ public class RpcConsumerNativeTest {
                 RpcType.REQUEST.getType(),
                 false,
                 false,
-                "enhanced_leastconnections");
+                "enhanced_leastconnections",
+                30000,
+                60000);
     }
 
     public static void main(String[] args) {
@@ -46,7 +48,9 @@ public class RpcConsumerNativeTest {
                 RpcType.REQUEST.getType(),
                 false,
                 false,
-                "enhanced_leastconnections");
+                "enhanced_leastconnections",
+                30000,
+                60000);
         // 这里一开始就传错了
         DemoService demoService = rpcClient.create(DemoService.class);
 

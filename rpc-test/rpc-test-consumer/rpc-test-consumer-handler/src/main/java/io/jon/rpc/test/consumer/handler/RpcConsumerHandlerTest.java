@@ -20,7 +20,7 @@ public class RpcConsumerHandlerTest {
 
     public static void main(String[] args) throws Exception {
 
-        RpcConsumer consumer = RpcConsumer.getInstance();
+        RpcConsumer consumer = RpcConsumer.getInstance(30000, 60000);
         RPCFuture future = consumer.sendRequest(
                 getRpcRequestProtocol(),
                 getRegistryService(

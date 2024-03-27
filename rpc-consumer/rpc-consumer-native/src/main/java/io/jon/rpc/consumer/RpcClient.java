@@ -20,7 +20,9 @@ public class RpcClient {
             String serviceVersion, String serviceGroup,
             long timeout, String serializationType,
             int messageType, boolean async, boolean oneway,
-            String registryLoadBalanceType) {
+            String registryLoadBalanceType,
+            int hearbeatInterval,
+            int scanNotActiveChannelInterval) {
         this.serviceVersion = serviceVersion;
         this.proxy = proxy;
         this.serviceGroup = serviceGroup;
@@ -30,6 +32,8 @@ public class RpcClient {
         this.messageType = messageType;
         this.async = async;
         this.oneway = oneway;
+        this.hearbeatInterval = hearbeatInterval;
+        this.scanNotActiveChannelInterval = scanNotActiveChannelInterval;
     }
 
     private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
@@ -77,6 +81,12 @@ public class RpcClient {
     // 动态代理的方式
     private String proxy;
 
+    // 心跳间隔时间 默认30秒
+    private int hearbeatInterval = 30000;
+
+    // 扫描并移除空闲连接时间 默认60秒
+    private int scanNotActiveChannelInterval = 60000;
+
     public <T> T create(Class<T> interfaceClass){
 
         ProxyFactory proxyFactory = ExtensionLoader.getExtension(ProxyFactory.class, proxy);
@@ -84,14 +94,14 @@ public class RpcClient {
                 interfaceClass,
                 serviceVersion, serviceGroup,
                 timeout, registryService,
-                RpcConsumer.getInstance(),
+                RpcConsumer.getInstance(hearbeatInterval, scanNotActiveChannelInterval),
                 serializationType, messageType,
                 async, oneway));
         return proxyFactory.getProxy(interfaceClass);
     }
 
     public void shutdown(){
-        RpcConsumer.getInstance().close();
+        RpcConsumer.getInstance(hearbeatInterval, scanNotActiveChannelInterval).close();
     }
 
     public <T> IAsyncObjectProxy createAsync(Class<T> interfaceClass){
@@ -99,7 +109,7 @@ public class RpcClient {
                 interfaceClass,
                 serviceVersion, serviceGroup,
                 timeout, registryService,
-                RpcConsumer.getInstance(),
+                RpcConsumer.getInstance(hearbeatInterval, scanNotActiveChannelInterval),
                 serializationType, messageType,
                 async, oneway);
     }
