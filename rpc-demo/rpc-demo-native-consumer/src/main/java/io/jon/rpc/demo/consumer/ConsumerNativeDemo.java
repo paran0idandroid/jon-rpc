@@ -34,6 +34,29 @@ public class ConsumerNativeDemo {
                 60000);
     }
 
+    public static void main(String[] args) {
+
+        RpcClient rpcClient = new RpcClient(
+                "127.0.0.1:2181",
+                "zookeeper",
+                "cglib",
+                "1.0.0",
+                "jon",
+                3000,
+                "protostuff",
+                RpcType.REQUEST.getType(),
+                false,
+                false,
+                "enhanced_leastconnections",
+                3000,
+                6000);
+        // 这里一开始就传错了
+        DemoService demoService = rpcClient.create(DemoService.class);
+
+        String result = demoService.hello("kevin durant");
+        LOGGER.info("result: " + result);
+    }
+
 
     @Test
     public void testInterfaceRpc() throws InterruptedException {

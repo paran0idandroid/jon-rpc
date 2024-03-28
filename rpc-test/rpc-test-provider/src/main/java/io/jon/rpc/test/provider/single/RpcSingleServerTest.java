@@ -13,7 +13,9 @@ public class RpcSingleServerTest {
                 "zookeeper",
                 "io.jon.rpc.test",
                 "asm",
-                "randomweight");
+                "randomweight",
+                3000,
+                6000);
         singleServer.startNettyServer();
     }
 }

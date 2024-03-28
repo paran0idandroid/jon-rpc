@@ -49,8 +49,8 @@ public class RpcConsumerNativeTest {
                 false,
                 false,
                 "enhanced_leastconnections",
-                30000,
-                60000);
+                3000,
+                6000);
         // 这里一开始就传错了
         DemoService demoService = rpcClient.create(DemoService.class);
 

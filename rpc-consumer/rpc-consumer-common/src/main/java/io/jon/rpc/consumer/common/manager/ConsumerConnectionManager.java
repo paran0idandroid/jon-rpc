@@ -52,7 +52,7 @@ public class ConsumerConnectionManager {
         channelCache.stream().forEach(channel -> {
             if(channel.isOpen() && channel.isActive()){
                 logger.info(
-                        "send heartbeat message from consumer to service provider, " +
+                        "send ===ping ping ping=== heartbeat message from consumer to service provider, " +
                         "the provider is: {}, the heartbeat message is :{}",
                         channel.remoteAddress(),
                         RpcConstants.HEARTBEAT_PING);

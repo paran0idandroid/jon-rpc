@@ -9,12 +9,10 @@ import io.jon.rpc.protocol.enumeration.RpcType;
 import io.jon.rpc.protocol.header.RpcHeader;
 import io.jon.rpc.protocol.request.RpcRequest;
 import io.jon.rpc.protocol.response.RpcResponse;
+import io.jon.rpc.provider.common.cache.ProviderChannelCache;
 import io.jon.rpc.reflect.api.ReflectInvoker;
 import io.jon.rpc.spi.loader.ExtensionLoader;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -44,53 +42,54 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
         this.reflectInvoker = ExtensionLoader.getExtension(ReflectInvoker.class, reflectType);
     }
 
-    @Override
-    protected void channelRead0(ChannelHandlerContext ctx, RpcProtocol<RpcRequest> protocol)
-            throws Exception {
-        /**
-         * 通过调用submit方法使任务异步执行
-         */
-        ServerThreadPool.submit(()->{
-            RpcHeader header = protocol.getHeader();
-            header.setMsgType((byte)RpcType.RESPONSE.getType());
-            RpcRequest request = protocol.getBody();
-            log.debug("Receive request " + header.getRequestId());
-            RpcProtocol<RpcResponse> responseRpcProtocol = new RpcProtocol<>();
-            RpcResponse response = new RpcResponse();
 
-            try{
-                Object result = handle(request);
-                response.setResult(result);
-                response.setAsync(request.isAsync());
-                response.setOneway(request.isOneway());
-                header.setStatus((byte) RpcStatus.SUCCESS.getCode());
-            }catch (Throwable t){
-                response.setError(t.toString());
-                header.setStatus((byte)RpcStatus.FAIL.getCode());
-                log.error("RPC Server handle request error: ", t);
-            }
-            responseRpcProtocol.setHeader(header);
-            responseRpcProtocol.setBody(response);
+    @Override
+    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+        super.channelUnregistered(ctx);
+        ProviderChannelCache.remove(ctx.channel());
+    }
+
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        super.channelActive(ctx);
+        ProviderChannelCache.add(ctx.channel());
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        super.channelInactive(ctx);
+        ProviderChannelCache.remove(ctx.channel());
+    }
+
+    @Override
+    protected void channelRead0(ChannelHandlerContext ctx, RpcProtocol<RpcRequest> protocol) throws Exception {
+        ServerThreadPool.submit(() -> {
+            RpcProtocol<RpcResponse> responseRpcProtocol = handlerMessage(protocol, ctx.channel());
             ctx.writeAndFlush(responseRpcProtocol).addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                    log.debug("Send response for request: " + header.getRequestId());
+                    log.debug("Send response for request " + protocol.getHeader().getRequestId());
                 }
             });
         });
     }
 
-    private RpcProtocol<RpcResponse> handlerMessage(RpcProtocol<RpcRequest> protocol){
+
+    private RpcProtocol<RpcResponse> handlerMessage(RpcProtocol<RpcRequest> protocol, Channel channel){
 
         RpcProtocol<RpcResponse> responseRpcProtocol = null;
         RpcHeader header = protocol.getHeader();
 
-        // 处理consumer发送到provider的心跳类型消息
+        // consumer发送给provider ping ping ping 心跳类型消息
         if(header.getMsgType() == (byte) RpcType.HEARTBEAT_FROM_CONSUMER.getType()){
-            responseRpcProtocol = handlerHeartbeatMessage(protocol, header);
+            // provider需要返回pong pong pong 心跳类型消息
+            responseRpcProtocol = handlerHeartbeatMessageFromConsumer(protocol, header);
         }else if(header.getMsgType() == (byte) RpcType.REQUEST.getType()){
             // 请求类型消息
             responseRpcProtocol = handlerRequestMessage(protocol, header);
+        }else if (header.getMsgType() == (byte) RpcType.HEARTBEAT_TO_PROVIDER.getType()){
+            // 接收到服务消费者响应的 pong pong pong 心跳消息
+            handlerHeartbeatMessageToProvider(protocol, channel);
         }
         return responseRpcProtocol;
     }
@@ -119,9 +118,9 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
         return responseRpcProtocol;
     }
 
-    private RpcProtocol<RpcResponse> handlerHeartbeatMessage(RpcProtocol<RpcRequest> protocol, RpcHeader header) {
+    private RpcProtocol<RpcResponse> handlerHeartbeatMessageFromConsumer(RpcProtocol<RpcRequest> protocol, RpcHeader header) {
 
-        // 处理发送给consumer的心跳信息
+        // 处理发送给consumer的pong pong pong心跳信息
         header.setMsgType((byte) RpcType.HEARTBEAT_TO_CONSUMER.getType());
         RpcRequest request = protocol.getBody();
         RpcProtocol<RpcResponse> responseRpcProtocol = new RpcProtocol<>();
@@ -133,6 +132,15 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
         responseRpcProtocol.setBody(response);
         responseRpcProtocol.setHeader(header);
         return responseRpcProtocol;
+    }
+
+    /**
+     * 处理服务消费者响应的心跳消息
+     */
+    private void handlerHeartbeatMessageToProvider(RpcProtocol<RpcRequest> protocol, Channel channel) {
+        log.info("receive service consumer's ===pong pong pong=== heartbeat message, " +
+                "the consumer is: {}, the heartbeat message is: {}",
+                channel.remoteAddress(), protocol.getBody().getParameters()[0]);
     }
 
     private Object handle(RpcRequest request) throws Throwable{
@@ -172,4 +180,5 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 
         return this.reflectInvoker.invokeMethod(serviceBean, serviceClass, methodName, parameterTypes, parameters);
     }
+
 }

@@ -2,9 +2,12 @@ package io.jon.rpc.test.scanner;
 
 import io.jon.rpc.common.scanner.ClassScanner;
 import io.jon.rpc.common.scanner.server.RpcReferenceScanner;
-import io.jon.rpc.common.scanner.server.RpcServiceScanner;
+import io.jon.rpc.protocol.meta.ServiceMeta;
+import io.jon.rpc.provider.common.scanner.RpcServiceScanner;
+import io.jon.rpc.registry.api.RegistryService;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.List;
 
 public class ScannerTest {
@@ -24,7 +27,31 @@ public class ScannerTest {
      */
     @Test
     public void testScannerClassNameListByRpcService() throws Exception {
-         RpcServiceScanner.doScannerWithRpcServiceAnnotationFilterAndRegistryService("io.jon.rpc.test.scanner");
+         RpcServiceScanner.doScannerWithRpcServiceAnnotationFilterAndRegistryService(
+                 "",
+                 123,
+                 "",
+                 new RegistryService() {
+                     @Override
+                     public void register(ServiceMeta serviceMeta) throws Exception {
+
+                     }
+
+                     @Override
+                     public void unRegister(ServiceMeta serviceMeta) throws Exception {
+
+                     }
+
+                     @Override
+                     public ServiceMeta discovery(String serviceName, int invokerHashCode, String sourceIp) throws Exception {
+                         return null;
+                     }
+
+                     @Override
+                     public void destroy() throws IOException {
+
+                     }
+                 });
     }
 
     /**

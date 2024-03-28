@@ -3,6 +3,7 @@ package io.jon.rpc.provider.common.server.base;
 import io.jon.rpc.codec.RpcDecoder;
 import io.jon.rpc.codec.RpcEncoder;
 import io.jon.rpc.provider.common.handler.RpcProviderHandler;
+import io.jon.rpc.provider.common.manager.ProviderConnectionManager;
 import io.jon.rpc.provider.common.server.api.Server;
 import io.jon.rpc.registry.api.RegistryService;
 import io.jon.rpc.registry.api.config.RegistryConfig;
@@ -19,6 +20,9 @@ import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class BaseServer implements Server {
@@ -27,17 +31,34 @@ public class BaseServer implements Server {
 
     protected int port = 27110;
 
+    //心跳间隔时间，默认30秒
+    private int heartbeatInterval = 30000;
+
+    //扫描并移除空闲连接时间，默认60秒
+    private int scanNotActiveChannelInterval = 60000;
+
     protected Map<String, Object> handlerMap = new HashMap<>();
 
     private final String reflectType;
 
     protected RegistryService registryService;
 
+    private ScheduledExecutorService executorService;
+
     public BaseServer(String serverAddress,
                       String registryAddress,
                       String registryType,
                       String reflectType,
-                      String registryLoadBalanceType){
+                      String registryLoadBalanceType,
+                      int heartbeatInterval,
+                      int scanNotActiveChannelInterval){
+
+        if(heartbeatInterval > 0){
+            this.heartbeatInterval = heartbeatInterval;
+        }
+        if(scanNotActiveChannelInterval > 0){
+            this.scanNotActiveChannelInterval = scanNotActiveChannelInterval;
+        }
         if(!StringUtils.isEmpty(serverAddress)){
             String[] serverArray = serverAddress.split(":");
             this.host = serverArray[0];
@@ -52,7 +73,6 @@ public class BaseServer implements Server {
 
         RegistryService registryService = null;
         try{
-//            registryService = new ZookeeperRegistryService();
             registryService = ExtensionLoader.getExtension(RegistryService.class, registryType);
             registryService.init(new RegistryConfig(registryAddress, registryType, registryLoadBalanceType));
         }catch (Exception e){
@@ -65,6 +85,8 @@ public class BaseServer implements Server {
 
     @Override
     public void startNettyServer() {
+
+        this.startHeartbeat();
         NioEventLoopGroup bossGroup = new NioEventLoopGroup();
         NioEventLoopGroup workerGroup = new NioEventLoopGroup();
         try{
@@ -93,5 +115,19 @@ public class BaseServer implements Server {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
         }
+    }
+
+    private void startHeartbeat() {
+        executorService = Executors.newScheduledThreadPool(2);
+        //扫描并处理所有不活跃的连接
+        executorService.scheduleAtFixedRate(() -> {
+            log.info("=============scanNotActiveChannel============");
+            ProviderConnectionManager.scanNotActiveChannel();
+        }, 10, scanNotActiveChannelInterval, TimeUnit.MILLISECONDS);
+
+        executorService.scheduleAtFixedRate(()->{
+            log.info("=============broadcastPingMessageFromProvider============");
+            ProviderConnectionManager.broadcastPingMessageFromProvider();
+        }, 3, heartbeatInterval, TimeUnit.MILLISECONDS);
     }
 }
