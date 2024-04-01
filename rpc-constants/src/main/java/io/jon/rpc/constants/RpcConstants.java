@@ -71,4 +71,30 @@ public class RpcConstants {
      * 心跳pong消息
      */
     public static final String HEARTBEAT_PONG = "pong";
+
+    /**
+     * decoder
+     */
+    public static final String CODEC_DECODER = "decoder";
+
+    /**
+     * encoder
+     */
+    public static final String CODEC_ENCODER = "encoder";
+
+    /**
+     * handler
+     */
+    public static final String CODEC_HANDLER = "handler";
+
+    /**
+     * server-idle-handler
+     */
+    public static final String CODEC_SERVER_IDLE_HANDLER = "server-idle-handler";
+
+    /**
+     * client-idle-handler
+     */
+    public static final String CODEC_CLIENT_IDLE_HANDLER = "client-idle-handler";
+
 }

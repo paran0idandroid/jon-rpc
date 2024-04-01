@@ -2,6 +2,7 @@ package io.jon.rpc.provider.common.server.base;
 
 import io.jon.rpc.codec.RpcDecoder;
 import io.jon.rpc.codec.RpcEncoder;
+import io.jon.rpc.constants.RpcConstants;
 import io.jon.rpc.provider.common.handler.RpcProviderHandler;
 import io.jon.rpc.provider.common.manager.ProviderConnectionManager;
 import io.jon.rpc.provider.common.server.api.Server;
@@ -15,6 +16,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
@@ -97,11 +99,24 @@ public class BaseServer implements Server {
                         @Override
                         protected void initChannel(SocketChannel channel) throws Exception {
                             channel.pipeline()
-//                                    .addLast(new StringDecoder()) //Netty自带
-//                                    .addLast(new StringEncoder()) //Netty自带
-                                    .addLast(new RpcDecoder())
-                                    .addLast(new RpcEncoder())
-                                    .addLast(new RpcProviderHandler(handlerMap, reflectType));
+                                    .addLast(RpcConstants.CODEC_DECODER, new RpcDecoder())
+                                    .addLast(RpcConstants.CODEC_ENCODER, new RpcEncoder())
+                                    .addLast(
+                                            RpcConstants.CODEC_SERVER_IDLE_HANDLER,
+                                            // readerIdleTime 读空闲超时检测定时任务在每readerIdleTime启动一次
+                                            // 如果在该时间内没有发生过读事件，则触发读超时事件READER_IDLE_STATE_EVENT
+                                            // 并将超时事件交给NettyClientHandler处理，如果为0则不创建定时任务
+                                            // writerIdleTime同理
+                                            new IdleStateHandler(
+                                                    0,
+                                                    0,
+                                                    heartbeatInterval, TimeUnit.MILLISECONDS))
+                                    // 当Netty的IdleStateHandler触发超时机制，会将事件传递到下一个handler
+                                    // 就是下面这个RpcProviderHandler
+                                    // 接收超时事件的方法是userEventTriggered
+                                    .addLast(
+                                            RpcConstants.CODEC_HANDLER,
+                                            new RpcProviderHandler(handlerMap, reflectType));
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)

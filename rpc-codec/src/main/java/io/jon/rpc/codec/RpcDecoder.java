@@ -58,11 +58,11 @@ public class RpcDecoder extends ByteToMessageDecoder implements RpcCodec {
         header.setSerializationType(serializationType);
         header.setMsgLen(dataLength);
 
-        //TODO 序列化类型是拓展点
         Serialization serialization = getSerialization(serializationType);
         switch (msgTypeEnum){
+            // 之所以遇到HEARTBEAT_FROM_CONSUMER HEARTBEAT_TO_PROVIDER类型要发送RpcRequest类型
+            // 是因为handlerHeartbeatMessageFromConsumer和handlerHeartbeatMessageToProvider就是发送RpcRequest
             case REQUEST:
-                //TODO 新增CASE
                 //服务消费者发送给服务提供者的心跳数据
             case HEARTBEAT_FROM_CONSUMER:
                 //服务提供者发送给服务消费者的心跳数据
@@ -75,8 +75,9 @@ public class RpcDecoder extends ByteToMessageDecoder implements RpcCodec {
                     out.add(protocol);
                 }
                 break;
+                // 下面这两个同理，它们所涉及的handlerHeartbeatMessageToConsumer和handlerHeartbeatMessageFromProvider
+                // 都是发送RpcResponse
             case RESPONSE:
-                //TODO 新增case
                 //服务提供者响应服务消费者的心跳数据
             case HEARTBEAT_TO_CONSUMER:
                 //服务消费者响应服务提供者的心跳数据

@@ -12,7 +12,9 @@ import io.jon.rpc.protocol.response.RpcResponse;
 import io.jon.rpc.provider.common.cache.ProviderChannelCache;
 import io.jon.rpc.reflect.api.ReflectInvoker;
 import io.jon.rpc.spi.loader.ExtensionLoader;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
+import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -74,6 +76,21 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
         });
     }
 
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+
+        if(evt instanceof IdleStateEvent){
+            Channel channel = ctx.channel();
+            try{
+                log.info("IdleStateEvent triggered, close channel " + channel);
+                channel.close();
+            }finally {
+                channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+            }
+        }
+
+        super.userEventTriggered(ctx, evt);
+    }
 
     private RpcProtocol<RpcResponse> handlerMessage(RpcProtocol<RpcRequest> protocol, Channel channel){
 

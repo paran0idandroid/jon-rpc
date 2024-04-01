@@ -36,7 +36,9 @@ public class ProviderConnectionManager {
     public static void broadcastPingMessageFromProvider(){
         Set<Channel> channelCache = ProviderChannelCache.getChannelCache();
         if (channelCache == null || channelCache.isEmpty()) return;
-        RpcHeader header = RpcHeaderFactory.getRequestHeader(RpcConstants.SERIALIZATION_PROTOSTUFF, RpcType.HEARTBEAT_FROM_PROVIDER.getType());
+        RpcHeader header = RpcHeaderFactory.getRequestHeader(
+                RpcConstants.SERIALIZATION_PROTOSTUFF,
+                RpcType.HEARTBEAT_FROM_PROVIDER.getType());
         RpcProtocol<RpcResponse> responseRpcProtocol = new RpcProtocol<RpcResponse>();
         RpcResponse rpcResponse = new RpcResponse();
         rpcResponse.setResult(RpcConstants.HEARTBEAT_PING);
