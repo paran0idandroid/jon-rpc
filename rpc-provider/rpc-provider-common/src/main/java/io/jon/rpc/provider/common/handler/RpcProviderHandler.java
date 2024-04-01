@@ -79,6 +79,10 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
 
+        // 使用finally块确保无论关闭是否成功，都会对通道进行一次写入和刷新
+        // （channel.writeAndFlush(Unpooled.EMPTY_BUFFER)）
+        // 并且添加一个监听器（ChannelFutureListener），监听通道关闭的事件，以确保通道已经被关闭
+        // 最后，调用了父类的userEventTriggered方法，以确保父类中的相应逻辑也能被执行
         if(evt instanceof IdleStateEvent){
             Channel channel = ctx.channel();
             try{
