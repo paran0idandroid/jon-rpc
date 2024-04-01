@@ -2,6 +2,7 @@ package io.jon.rpc.consumer.common;
 
 import io.jon.rpc.common.helper.RpcServiceHelper;
 import io.jon.rpc.common.ip.IpUtils;
+import io.jon.rpc.constants.RpcConstants;
 import io.jon.rpc.consumer.common.handler.RpcConsumerHandler;
 import io.jon.rpc.consumer.common.helper.RpcConsumerHandlerHelper;
 import io.jon.rpc.consumer.common.initializer.RpcConsumerInitializer;
@@ -48,8 +49,21 @@ public class RpcConsumer implements Consumer {
     // 扫描并移除空闲连接时间 默认60秒
     private int scanNotActiveChannelInterval = 60000;
 
-    private RpcConsumer(int hearbeatInterval, int scanNotActiveChannelInterval) {
+    //重试间隔时间
+    private int retryInterval = 1000;
 
+    //重试次数
+    private int retryTimes = 3;
+
+    private RpcConsumer(
+            int hearbeatInterval,
+            int scanNotActiveChannelInterval,
+            int retryInterval,
+            int retryTimes
+    ) {
+
+        this.retryInterval = retryInterval <= 0 ? RpcConstants.DEFAULT_RETRY_INTERVAL : retryInterval;
+        this.retryTimes = retryTimes <= 0 ? RpcConstants.DEFAULT_RETRY_TIMES : retryTimes;
         if(hearbeatInterval > 0){
             this.hearbeatInterval = hearbeatInterval;
         }
@@ -65,11 +79,11 @@ public class RpcConsumer implements Consumer {
         this.startHeartbeat();
     }
 
-    public static RpcConsumer getInstance(int hearbeatInterval, int scanNotActiveChannelInterval){
+    public static RpcConsumer getInstance(int hearbeatInterval, int scanNotActiveChannelInterval, int retryInterval, int retryTimes){
         if(instance == null){
             synchronized (RpcConsumer.class){
                 if(instance == null){
-                    instance = new RpcConsumer(hearbeatInterval, scanNotActiveChannelInterval);
+                    instance = new RpcConsumer(hearbeatInterval, scanNotActiveChannelInterval, retryInterval, retryTimes);
                 }
             }
         }
@@ -98,21 +112,11 @@ public class RpcConsumer implements Consumer {
         int invokerHashCode = (parameters == null || parameters.length <= 0)
                 ? serviceKey.hashCode() : parameters[0].hashCode();
 
-        ServiceMeta serviceMeta = registryService.discovery(serviceKey, invokerHashCode, localIp);
+        ServiceMeta serviceMeta = this.getServiceMeta(registryService, serviceKey, invokerHashCode);
         if(serviceMeta != null){
-            RpcConsumerHandler handler = RpcConsumerHandlerHelper.get(serviceMeta);
 
-            //缓存中没有handler
-            if(handler == null){
-                handler = getRpcConsumerHandler(serviceMeta);
-                RpcConsumerHandlerHelper.put(serviceMeta, handler);
-            }else if(!handler.getChannel().isActive()){
-                //缓存中存在但不活跃
-                handler.close();
-                handler = getRpcConsumerHandler(serviceMeta);
-                RpcConsumerHandlerHelper.put(serviceMeta, handler);
-            }
-            return handler.sendRequest(protocol, request.isAsync(), request.isOneway());
+            return getRpcConsumerHandlerWithCache(serviceMeta)
+                    .sendRequest(protocol, request.isAsync(), request.isOneway());
         }
 
         return null;
@@ -150,5 +154,43 @@ public class RpcConsumer implements Consumer {
             logger.info("=============broadcastPingMessageFromConsumer============");
             ConsumerConnectionManager.broadcastPingMessageFromConsumer();
         }, 3, hearbeatInterval, TimeUnit.MILLISECONDS);
+    }
+
+    private ServiceMeta getServiceMeta(RegistryService registryService, String serviceKey, int invokeHashCode) throws Exception{
+
+        // 首次获取服务元数据信息，如果获取到直接返回，否则进行重试
+        logger.info("获取服务提供者元数据...");
+
+        ServiceMeta serviceMeta = registryService.discovery(serviceKey, invokeHashCode, localIp);
+
+        //启动重试机制
+        if(serviceMeta == null){
+            for (int i = 1; i <= retryTimes; i++) {
+                logger.info("获取服务提供者元数据第【{}】次重试...", i);
+                serviceMeta = registryService.discovery(serviceKey, invokeHashCode, localIp);
+                if(serviceMeta != null){
+                    break;
+                }
+                Thread.sleep(retryInterval);
+            }
+        }
+
+        return serviceMeta;
+    }
+
+    // 从缓存中获取RpcConsumerHandler，缓存中没有再创建
+    private RpcConsumerHandler getRpcConsumerHandlerWithCache(ServiceMeta serviceMeta) throws InterruptedException{
+
+        RpcConsumerHandler handler = RpcConsumerHandlerHelper.get(serviceMeta);
+        if(handler == null){
+            handler = getRpcConsumerHandler(serviceMeta);
+            RpcConsumerHandlerHelper.put(serviceMeta, handler);
+        }else if(!handler.getChannel().isActive()){
+            handler.close();
+            handler = getRpcConsumerHandler(serviceMeta);
+            RpcConsumerHandlerHelper.put(serviceMeta, handler);
+        }
+
+        return handler;
     }
 }

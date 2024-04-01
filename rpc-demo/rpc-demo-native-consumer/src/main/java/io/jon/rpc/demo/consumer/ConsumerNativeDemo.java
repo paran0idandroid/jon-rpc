@@ -30,8 +30,10 @@ public class ConsumerNativeDemo {
                 false,
                 false,
                 "enhanced_leastconnections",
-                30000,
-                60000);
+                3000,
+                6000,
+                1000,
+                3);
     }
 
     public static void main(String[] args) {
@@ -49,7 +51,9 @@ public class ConsumerNativeDemo {
                 false,
                 "enhanced_leastconnections",
                 3000,
-                6000);
+                6000,
+                1000,
+                3);
         // 这里一开始就传错了
         DemoService demoService = rpcClient.create(DemoService.class);
 

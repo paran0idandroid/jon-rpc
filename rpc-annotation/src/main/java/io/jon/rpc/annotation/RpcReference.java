@@ -65,4 +65,15 @@ public @interface RpcReference {
      * 服务分组，默认为空
      */
     String group() default "";
+
+    /**
+     * 重试间隔时间
+     */
+    int retryInterval() default 1000;
+
+    /**
+     * 重试间隔时间
+     */
+    int retryTimes() default 3;
+
 }

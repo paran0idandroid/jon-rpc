@@ -21,8 +21,8 @@ public class RpcClient {
             long timeout, String serializationType,
             int messageType, boolean async, boolean oneway,
             String registryLoadBalanceType,
-            int hearbeatInterval,
-            int scanNotActiveChannelInterval) {
+            int hearbeatInterval, int scanNotActiveChannelInterval,
+            int retryInterval, int retryTimes) {
         this.serviceVersion = serviceVersion;
         this.proxy = proxy;
         this.serviceGroup = serviceGroup;
@@ -34,6 +34,8 @@ public class RpcClient {
         this.oneway = oneway;
         this.hearbeatInterval = hearbeatInterval;
         this.scanNotActiveChannelInterval = scanNotActiveChannelInterval;
+        this.retryInterval = retryInterval;
+        this.retryTimes = retryTimes;
     }
 
     private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
@@ -87,6 +89,13 @@ public class RpcClient {
     // 扫描并移除空闲连接时间 默认60秒
     private int scanNotActiveChannelInterval = 60000;
 
+    //重试间隔时间
+    private int retryInterval = 1000;
+
+    //重试次数
+    private int retryTimes = 3;
+
+
     public <T> T create(Class<T> interfaceClass){
 
         ProxyFactory proxyFactory = ExtensionLoader.getExtension(ProxyFactory.class, proxy);
@@ -94,14 +103,18 @@ public class RpcClient {
                 interfaceClass,
                 serviceVersion, serviceGroup,
                 timeout, registryService,
-                RpcConsumer.getInstance(hearbeatInterval, scanNotActiveChannelInterval),
+                RpcConsumer.getInstance(
+                        hearbeatInterval, scanNotActiveChannelInterval,
+                        retryInterval, retryTimes),
                 serializationType, messageType,
                 async, oneway));
         return proxyFactory.getProxy(interfaceClass);
     }
 
     public void shutdown(){
-        RpcConsumer.getInstance(hearbeatInterval, scanNotActiveChannelInterval).close();
+        RpcConsumer.getInstance(
+                hearbeatInterval, scanNotActiveChannelInterval,
+                retryInterval, retryTimes).close();
     }
 
     public <T> IAsyncObjectProxy createAsync(Class<T> interfaceClass){
@@ -109,7 +122,9 @@ public class RpcClient {
                 interfaceClass,
                 serviceVersion, serviceGroup,
                 timeout, registryService,
-                RpcConsumer.getInstance(hearbeatInterval, scanNotActiveChannelInterval),
+                RpcConsumer.getInstance(
+                        hearbeatInterval, scanNotActiveChannelInterval,
+                        retryInterval, retryTimes),
                 serializationType, messageType,
                 async, oneway);
     }
