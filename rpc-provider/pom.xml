@@ -14,6 +14,7 @@
     <modules>
         <module>rpc-provider-common</module>
         <module>rpc-provider-native</module>
+        <module>rpc-provider-spring</module>
     </modules>
 
     <properties>

@@ -133,6 +133,7 @@ public class RpcConsumer implements Consumer {
 
     private RpcConsumerHandler getRpcConsumerHandler(ServiceMeta serviceMeta) throws InterruptedException{
 
+        // 连接服务提供者
         ChannelFuture channelFuture = bootstrap.connect(serviceMeta.getServiceAddr(), serviceMeta.getServicePort()).sync();
         channelFuture.addListener((ChannelFutureListener) listener ->{
             if(channelFuture.isSuccess()){

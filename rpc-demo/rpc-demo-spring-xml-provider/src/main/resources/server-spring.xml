@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:component-scan base-package="io.jon.rpc.demo"/>
+
+    <context:property-placeholder location="classpath:rpc.properties"/>
+
+    <bean id="rpcServer" class="io.jon.rpc.provider.spring.RpcSpringServer">
+        <constructor-arg name="serverAddress" value="${server.address}"/>
+        <constructor-arg name="registryAddress" value="${registry.address}"/>
+        <constructor-arg name="registryType" value="${registry.type}"/>
+        <constructor-arg name="reflectType" value="${reflect.type}"/>
+        <constructor-arg name="registryLoadBalanceType" value="${registry.loadbalance.type}"/>
+        <constructor-arg name="heartbeatInterval" value="${server.heartbeatInterval}"/>
+        <constructor-arg name="scanNotActiveChannelInterval" value="${server.scanNotActiveChannelInterval}"/>
+    </bean>
+</beans>
+
+<!--XML声明：<?xml version="1.0" encoding="UTF-8"?> 指定了XML版本和字符编码。-->
+
+<!--根元素 <beans>：该元素定义了Spring的根容器，它包含了整个Spring配置的内容。-->
+
+<!--命名空间和模式位置声明：在 <beans> 元素中，通过 xmlns 和 xsi:schemaLocation 属性引入了两个命名空间和相应的XSD模式位置。
+这些命名空间分别是：-->
+<!--xmlns="http://www.springframework.org/schema/beans"：用于定义Spring的核心Bean配置。-->
+<!--xmlns:context="http://www.springframework.org/schema/context"：用于支持Spring的上下文配置。-->
+<!--xsi:schemaLocation：指定了以上两个命名空间对应的XSD模式位置，这样Spring可以根据这些位置找到对应的模式文件，进行验证和解析-->
+<!--<context:component-scan> 元素：该元素配置了组件扫描，用于自动扫描指定包下的组件，并将其注册为Spring的Bean
+        在本例中，base-package 属性指定了要扫描的基础包为 io.jon.rpc.demo，这意味着Spring会扫描该包及其子包下的所有类
+        并将其注册为Spring的Bean。-->
+
+<!--<context:property-placeholder> 元素：该元素用于加载属性文件，将属性文件中的键值对注入到Spring的环境中，以便在其他地方引用
+在本例中，location 属性指定了属性文件的路径为 classpath:rpc.properties。-->
+
+<!--<bean> 元素：该元素用于定义一个Bean，在本例中定义了名为 rpcServer 的Bean
+它是 io.jon.rpc.provider.spring.RpcSpringServer 类的一个实例
+该类的构造函数参数通过 <constructor-arg> 元素指定了对应的值，这些值来自于属性文件中的属性值
+通过 ${...} 语法引用。这样做的目的是使得配置更加灵活，可以通过修改属性文件来改变Bean的初始化参数。-->
