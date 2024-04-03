@@ -23,9 +23,11 @@ public class RpcSpringServer extends BaseServer
     private final Logger logger = LoggerFactory.getLogger(RpcSpringServer.class);
 
     public RpcSpringServer(
-            String serverAddress, String registryAddress,
-            String registryType, String registryLoadBalanceType,
+            String serverAddress,
+            String registryAddress,
+            String registryType,
             String reflectType,
+            String registryLoadBalanceType,
             int heartbeatInterval, int scanNotActiveChannelInterval
     ){
 
@@ -36,8 +38,6 @@ public class RpcSpringServer extends BaseServer
                 reflectType,
                 registryLoadBalanceType,
                 heartbeatInterval, scanNotActiveChannelInterval);
-
-
     }
 
     // setApplicationContext 方法通过实现 ApplicationContextAware 接口，获取了Spring容器的上下文对象
