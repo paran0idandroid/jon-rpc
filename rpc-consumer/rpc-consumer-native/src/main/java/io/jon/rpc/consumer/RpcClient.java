@@ -21,7 +21,7 @@ public class RpcClient {
             long timeout, String serializationType,
             int messageType, boolean async, boolean oneway,
             String registryLoadBalanceType,
-            int hearbeatInterval, int scanNotActiveChannelInterval,
+            int heartbeatInterval, int scanNotActiveChannelInterval,
             int retryInterval, int retryTimes) {
         this.serviceVersion = serviceVersion;
         this.proxy = proxy;
@@ -32,7 +32,7 @@ public class RpcClient {
         this.messageType = messageType;
         this.async = async;
         this.oneway = oneway;
-        this.hearbeatInterval = hearbeatInterval;
+        this.heartbeatInterval = heartbeatInterval;
         this.scanNotActiveChannelInterval = scanNotActiveChannelInterval;
         this.retryInterval = retryInterval;
         this.retryTimes = retryTimes;
@@ -84,7 +84,7 @@ public class RpcClient {
     private String proxy;
 
     // 心跳间隔时间 默认30秒
-    private int hearbeatInterval = 30000;
+    private int heartbeatInterval = 30000;
 
     // 扫描并移除空闲连接时间 默认60秒
     private int scanNotActiveChannelInterval = 60000;
@@ -104,7 +104,7 @@ public class RpcClient {
                 serviceVersion, serviceGroup,
                 timeout, registryService,
                 RpcConsumer.getInstance(
-                        hearbeatInterval, scanNotActiveChannelInterval,
+                        heartbeatInterval, scanNotActiveChannelInterval,
                         retryInterval, retryTimes),
                 serializationType, messageType,
                 async, oneway));
@@ -113,7 +113,7 @@ public class RpcClient {
 
     public void shutdown(){
         RpcConsumer.getInstance(
-                hearbeatInterval, scanNotActiveChannelInterval,
+                heartbeatInterval, scanNotActiveChannelInterval,
                 retryInterval, retryTimes).close();
     }
 
@@ -123,7 +123,7 @@ public class RpcClient {
                 serviceVersion, serviceGroup,
                 timeout, registryService,
                 RpcConsumer.getInstance(
-                        hearbeatInterval, scanNotActiveChannelInterval,
+                        heartbeatInterval, scanNotActiveChannelInterval,
                         retryInterval, retryTimes),
                 serializationType, messageType,
                 async, oneway);

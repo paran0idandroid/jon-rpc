@@ -107,5 +107,20 @@ public class RpcConstants {
      */
     public static final int DEFAULT_RETRY_TIMES = Integer.MAX_VALUE;
 
+    /**
+     * 初始化的方法
+     */
+    public static final String INIT_METHOD_NAME = "init";
+
+    /**
+     * RPC框架默认的心跳间隔时间
+     */
+    public static final int RPC_COMMON_DEFAULT_HEARTBEATINTERVAL = 30000;
+
+    /**
+     * 服务提供者默认的扫描并移除不活跃连接的间隔时间
+     */
+    public static final int RPC_COMMON_DEFAULT_SCANNOTACTIVECHANNELINTERVAL = 60000;
+
 
 }

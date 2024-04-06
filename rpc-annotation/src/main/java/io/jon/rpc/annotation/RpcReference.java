@@ -1,6 +1,7 @@
 package io.jon.rpc.annotation;
 
 
+import io.jon.rpc.constants.RpcConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.annotation.ElementType;
@@ -65,6 +66,16 @@ public @interface RpcReference {
      * 服务分组，默认为空
      */
     String group() default "";
+
+    /**
+     * 心跳间隔时间，默认30秒
+     */
+    int heartbeatInterval() default RpcConstants.RPC_COMMON_DEFAULT_HEARTBEATINTERVAL;
+
+    /**
+     * 扫描空闲连接间隔时间，默认60秒
+     */
+    int scanNotActiveChannelInterval() default RpcConstants.RPC_COMMON_DEFAULT_SCANNOTACTIVECHANNELINTERVAL;
 
     /**
      * 重试间隔时间
