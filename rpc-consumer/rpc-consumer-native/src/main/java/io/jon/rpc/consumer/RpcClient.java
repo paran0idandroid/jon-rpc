@@ -19,7 +19,7 @@ public class RpcClient {
             String registryAddress, String registryType, String proxy,
             String serviceVersion, String serviceGroup,
             long timeout, String serializationType,
-            int messageType, boolean async, boolean oneway,
+            boolean async, boolean oneway,
             String registryLoadBalanceType,
             int heartbeatInterval, int scanNotActiveChannelInterval,
             int retryInterval, int retryTimes) {
@@ -29,7 +29,6 @@ public class RpcClient {
         this.timeout = timeout;
         this.registryService = getRegistryService(registryAddress, registryType, registryLoadBalanceType);
         this.serializationType = serializationType;
-        this.messageType = messageType;
         this.async = async;
         this.oneway = oneway;
         this.heartbeatInterval = heartbeatInterval;
@@ -72,7 +71,7 @@ public class RpcClient {
     private String serializationType;
 
     // 消息类型
-    private int messageType;
+//    private int messageType;
 
     // 是否异步调用
     private boolean async;
@@ -106,7 +105,7 @@ public class RpcClient {
                 RpcConsumer.getInstance(
                         heartbeatInterval, scanNotActiveChannelInterval,
                         retryInterval, retryTimes),
-                serializationType, messageType,
+                serializationType,
                 async, oneway));
         return proxyFactory.getProxy(interfaceClass);
     }
@@ -125,7 +124,7 @@ public class RpcClient {
                 RpcConsumer.getInstance(
                         heartbeatInterval, scanNotActiveChannelInterval,
                         retryInterval, retryTimes),
-                serializationType, messageType,
+                serializationType,
                 async, oneway);
     }
 }

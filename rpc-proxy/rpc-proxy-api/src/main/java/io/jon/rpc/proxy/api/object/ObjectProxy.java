@@ -23,7 +23,7 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
                        String serviceGroup, long timeout,
                        RegistryService registryService,
                        Consumer consumer, String serializationType,
-                       int messageType, boolean async, boolean oneway) {
+                       boolean async, boolean oneway) {
         this.clazz = clazz;
         this.serviceVersion = serviceVersion;
         this.serviceGroup = serviceGroup;
@@ -31,7 +31,6 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
         this.registryService = registryService;
         this.consumer = consumer;
         this.serializationType = serializationType;
-        this.messageType = messageType;
         this.async = async;
         this.oneway = oneway;
     }
@@ -57,7 +56,7 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
     private String serializationType;
 
     // 消息类型
-    private int messageType;
+//    private int messageType;
 
     // 是否异步调用
     private boolean async;
@@ -85,7 +84,7 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 
         RpcProtocol<RpcRequest> requestRpcProtocol = new RpcProtocol<>();
         requestRpcProtocol.setHeader(RpcHeaderFactory.
-                getRequestHeader(serializationType, messageType));
+                getRequestHeader(serializationType, RpcType.REQUEST.getType()));
 
         RpcRequest request = new RpcRequest();
         request.setClassName(method.getDeclaringClass().getName());

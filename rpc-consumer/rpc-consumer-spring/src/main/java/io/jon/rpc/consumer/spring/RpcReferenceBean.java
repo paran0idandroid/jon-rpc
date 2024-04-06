@@ -89,7 +89,7 @@ public class RpcReferenceBean implements FactoryBean<Object> {
                 registryAddress, registryType, proxy,
                 version, group,
                 timeout, serializationType,
-                messageType, async, oneway,
+                async, oneway,
                 loadBalanceType,
                 heartbeatInterval, scanNotActiveChannelInterval,
                 retryInterval, retryTimes
