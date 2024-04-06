@@ -79,11 +79,12 @@ public class RpcReferenceBean implements FactoryBean<Object> {
     }
 
     @Override
-    public Object getObject() throws Exception{
+    public Object getObject() throws RuntimeException{
         return object;
     }
 
-    public void init() throws Exception{
+    @SuppressWarnings("unchecked")
+    public void init() throws RuntimeException{
 
         RpcClient rpcClient = new RpcClient(
                 registryAddress, registryType, proxy,
