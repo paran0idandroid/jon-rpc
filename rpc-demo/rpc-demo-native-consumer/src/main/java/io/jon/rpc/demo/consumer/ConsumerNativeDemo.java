@@ -2,7 +2,6 @@ package io.jon.rpc.demo.consumer;
 
 import io.jon.rpc.consumer.RpcClient;
 import io.jon.rpc.demo.api.DemoService;
-import io.jon.rpc.protocol.enumeration.RpcType;
 import io.jon.rpc.proxy.api.async.IAsyncObjectProxy;
 import io.jon.rpc.proxy.api.future.RPCFuture;
 import org.junit.Before;

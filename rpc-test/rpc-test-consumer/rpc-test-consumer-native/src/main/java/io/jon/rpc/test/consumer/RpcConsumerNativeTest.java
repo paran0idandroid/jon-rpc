@@ -1,11 +1,9 @@
 package io.jon.rpc.test.consumer;
 
 import io.jon.rpc.consumer.RpcClient;
-import io.jon.rpc.protocol.enumeration.RpcType;
+import io.jon.rpc.demo.api.DemoService;
 import io.jon.rpc.proxy.api.async.IAsyncObjectProxy;
 import io.jon.rpc.proxy.api.future.RPCFuture;
-//import io.jon.rpc.test.api.DemoService;
-import io.jon.rpc.demo.api.DemoService;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;

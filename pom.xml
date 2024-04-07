@@ -26,6 +26,7 @@
         <module>rpc-reflect</module>
         <module>rpc-loadbalancer</module>
         <module>rpc-demo</module>
+        <module>rpc-spring-boot-starter</module>
     </modules>
 
     <properties>

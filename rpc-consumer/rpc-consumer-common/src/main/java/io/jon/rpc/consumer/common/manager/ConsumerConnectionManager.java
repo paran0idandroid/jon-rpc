@@ -8,7 +8,6 @@ import io.jon.rpc.protocol.header.RpcHeader;
 import io.jon.rpc.protocol.header.RpcHeaderFactory;
 import io.jon.rpc.protocol.request.RpcRequest;
 import io.netty.channel.Channel;
-import jdk.nashorn.internal.ir.RuntimeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
