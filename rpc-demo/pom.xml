@@ -20,6 +20,7 @@
         <module>rpc-demo-spring-xml-consumer</module>
         <module>rpc-demo-spring-annotation-consumer</module>
         <module>rpc-demo-spring-boot-provider</module>
+        <module>rpc-demo-spring-boot-consumer</module>
     </modules>
 
     <dependencies>

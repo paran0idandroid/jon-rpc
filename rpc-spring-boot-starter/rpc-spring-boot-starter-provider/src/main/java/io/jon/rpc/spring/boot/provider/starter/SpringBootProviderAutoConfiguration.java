@@ -3,10 +3,12 @@ package io.jon.rpc.spring.boot.provider.starter;
 import io.jon.rpc.provider.spring.RpcSpringServer;
 import io.jon.rpc.spring.boot.provider.config.SpringBootProviderConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@EnableConfigurationProperties
 public class SpringBootProviderAutoConfiguration {
 
     @Bean

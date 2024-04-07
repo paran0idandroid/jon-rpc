@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>rpc-spring-boot-starter-provider</module>
+        <module>rpc-spring-boot-starter-consumer</module>
     </modules>
 
     <properties>
