@@ -28,7 +28,9 @@ public class RpcSpringServer extends BaseServer
             String registryType,
             String reflectType,
             String registryLoadBalanceType,
-            int heartbeatInterval, int scanNotActiveChannelInterval
+            int heartbeatInterval, int scanNotActiveChannelInterval,
+            boolean enableResultCache,
+            int resultCacheExpire
     ){
 
         super(
@@ -37,7 +39,8 @@ public class RpcSpringServer extends BaseServer
                 registryType,
                 reflectType,
                 registryLoadBalanceType,
-                heartbeatInterval, scanNotActiveChannelInterval);
+                heartbeatInterval, scanNotActiveChannelInterval,
+                enableResultCache, resultCacheExpire);
     }
 
     // setApplicationContext 方法通过实现 ApplicationContextAware 接口，获取了Spring容器的上下文对象

@@ -15,7 +15,9 @@ public class RpcSingleServerTest {
                 "asm",
                 "randomweight",
                 3000,
-                6000);
+                6000,
+                false,
+                30000);
         singleServer.startNettyServer();
     }
 }

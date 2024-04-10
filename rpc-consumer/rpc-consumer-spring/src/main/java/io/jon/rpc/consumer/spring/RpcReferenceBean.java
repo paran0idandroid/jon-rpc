@@ -73,6 +73,19 @@ public class RpcReferenceBean implements FactoryBean<Object> {
     //重试次数
     private int retryTimes = 3;
 
+    /**
+     * 是否开启结果缓存
+     */
+    private boolean enableResultCache;
+
+    /**
+     * 缓存结果的时长，单位是毫秒
+     */
+    private int resultCacheExpire;
+
+    private RpcClient rpcClient;
+
+
     @Override
     public Class<?> getObjectType() {
         return interfaceClass;
@@ -86,14 +99,15 @@ public class RpcReferenceBean implements FactoryBean<Object> {
     @SuppressWarnings("unchecked")
     public void init() throws RuntimeException{
 
-        RpcClient rpcClient = new RpcClient(
+        rpcClient = new RpcClient(
                 registryAddress, registryType, proxy,
                 version, group,
                 timeout, serializationType,
                 async, oneway,
                 loadBalanceType,
                 heartbeatInterval, scanNotActiveChannelInterval,
-                retryInterval, retryTimes
+                retryInterval, retryTimes,
+                enableResultCache, resultCacheExpire
         );
 
         this.object = rpcClient.create(interfaceClass);

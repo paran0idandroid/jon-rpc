@@ -36,6 +36,12 @@ public class SpringAnnotationProviderConfig {
     @Value("${server.scanNotActiveChannelInterval}")
     private int scanNotActiveChannelInterval;
 
+    @Value("${server.enableResultCache}")
+    private boolean enableResultCache;
+
+    @Value("${server.resultCacheExpire}")
+    private int resultCacheExpire;
+
     @Bean
     public RpcSpringServer rpcSpringServer(){
         return new RpcSpringServer(
@@ -44,7 +50,8 @@ public class SpringAnnotationProviderConfig {
                 registryType,
                 reflectType,
                 registryLoadBalanceType,
-                heartbeatInterval, scanNotActiveChannelInterval
+                heartbeatInterval, scanNotActiveChannelInterval,
+                enableResultCache, resultCacheExpire
         );
     }
 }

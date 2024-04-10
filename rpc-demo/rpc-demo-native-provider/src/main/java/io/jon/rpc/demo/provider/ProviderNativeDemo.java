@@ -15,7 +15,9 @@ public class ProviderNativeDemo {
                 "asm",
                 "randomweight",
                 3000,
-                6000);
+                6000,
+                true,
+                30000);
         singleServer.startNettyServer();
     }
 }

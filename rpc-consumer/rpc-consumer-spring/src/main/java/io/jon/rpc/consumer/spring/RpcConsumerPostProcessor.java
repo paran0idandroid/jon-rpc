@@ -98,6 +98,9 @@ public class RpcConsumerPostProcessor
             builder.addPropertyValue("heartbeatInterval", annotation.heartbeatInterval());
             builder.addPropertyValue("retryInterval", annotation.retryInterval());
             builder.addPropertyValue("retryTimes", annotation.retryTimes());
+            builder.addPropertyValue("enableResultCache", annotation.enableResultCache());
+            builder.addPropertyValue("resultCacheExpire", annotation.resultCacheExpire());
+
 
             BeanDefinition beanDefinition = builder.getBeanDefinition();
             rpcRefBeanDefinitions.put(field.getName(), beanDefinition);

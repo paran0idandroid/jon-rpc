@@ -1,5 +1,8 @@
 package io.jon.rpc.proxy.api.object;
 
+import io.jon.rpc.cache.result.CacheResultKey;
+import io.jon.rpc.cache.result.CacheResultManager;
+import io.jon.rpc.constants.RpcConstants;
 import io.jon.rpc.protocol.RpcProtocol;
 import io.jon.rpc.protocol.enumeration.RpcType;
 import io.jon.rpc.protocol.header.RpcHeaderFactory;
@@ -23,7 +26,8 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
                        String serviceGroup, long timeout,
                        RegistryService registryService,
                        Consumer consumer, String serializationType,
-                       boolean async, boolean oneway) {
+                       boolean async, boolean oneway,
+                       boolean enableResultCache, int resultCacheExpire) {
         this.clazz = clazz;
         this.serviceVersion = serviceVersion;
         this.serviceGroup = serviceGroup;
@@ -33,6 +37,12 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
         this.serializationType = serializationType;
         this.async = async;
         this.oneway = oneway;
+        this.enableResultCache = enableResultCache;
+        if (resultCacheExpire <= 0){
+            resultCacheExpire = RpcConstants.RPC_SCAN_RESULT_CACHE_EXPIRE;
+        }
+        this.cacheResultManager = CacheResultManager.getInstance(resultCacheExpire, enableResultCache);
+
     }
 
     // 接口的Class对象
@@ -64,35 +74,65 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
     // 是否单向调用
     private boolean oneway;
 
+    /**
+     * 是否开启结果缓存
+     */
+    private boolean enableResultCache;
+
+    /**
+     * 结果缓存管理器
+     */
+    private CacheResultManager<Object> cacheResultManager;
+
+
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        if(Object.class == method.getDeclaringClass()){
+        if (Object.class == method.getDeclaringClass()) {
             String name = method.getName();
-            if("equals".equals(name)){
+            if ("equals".equals(name)) {
                 return proxy == args[0];
-            }else if("hashCode".equals(name)){
+            } else if ("hashCode".equals(name)) {
                 return System.identityHashCode(proxy);
-            }else if("toString".equals(name)){
+            } else if ("toString".equals(name)) {
                 return proxy.getClass().getName() + "@" +
                         Integer.toHexString(System.identityHashCode(proxy)) +
                         ", with InvocationHandler " + this;
-            }else{
+            } else {
                 throw new IllegalStateException(String.valueOf(method));
             }
         }
+        //开启缓存，直接调用方法请求服务提供者
+        if (enableResultCache) return invokeSendRequestMethodCache(method, args);
+        return invokeSendRequestMethod(method, args);
+
+    }
+
+    @Override
+    public RPCFuture call(String funcName, Object... args) {
+
+        RpcProtocol<RpcRequest> request = createRequest(this.clazz.getName(), funcName, args);
+        RPCFuture rpcFuture = null;
+        try{
+            rpcFuture = this.consumer.sendRequest(request, registryService);
+        }catch (Exception e){
+            LOGGER.error("async all throws exception:{}", e);
+        }
+        return rpcFuture;
+
+    }
+
+    private Object invokeSendRequestMethod(Method method, Object[] args) throws Exception{
 
         RpcProtocol<RpcRequest> requestRpcProtocol = new RpcProtocol<>();
-        requestRpcProtocol.setHeader(RpcHeaderFactory.
-                getRequestHeader(serializationType, RpcType.REQUEST.getType()));
-
+        requestRpcProtocol.setHeader(RpcHeaderFactory.getRequestHeader(serializationType, RpcType.REQUEST.getType()));
         RpcRequest request = new RpcRequest();
+        request.setVersion(serviceVersion);
         request.setClassName(method.getDeclaringClass().getName());
         request.setMethodName(method.getName());
         request.setParameterTypes(method.getParameterTypes());
         request.setGroup(serviceGroup);
         request.setParameters(args);
-        request.setVersion(serviceVersion);
         request.setAsync(async);
         request.setOneway(oneway);
         requestRpcProtocol.setBody(request);
@@ -113,22 +153,29 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
         }
 
         RPCFuture rpcFuture = this.consumer.sendRequest(requestRpcProtocol, registryService);
-        return rpcFuture == null ? null :
-                timeout > 0 ? rpcFuture.get(timeout, TimeUnit.MILLISECONDS) : rpcFuture.get();
+        return rpcFuture == null ? null : timeout > 0 ?
+                rpcFuture.get(timeout, TimeUnit.MILLISECONDS) : rpcFuture.get();
     }
 
-    @Override
-    public RPCFuture call(String funcName, Object... args) {
+    private Object invokeSendRequestMethodCache(Method method, Object[] args) throws Exception{
 
-        RpcProtocol<RpcRequest> request = createRequest(this.clazz.getName(), funcName, args);
-        RPCFuture rpcFuture = null;
-        try{
-            rpcFuture = this.consumer.sendRequest(request, registryService);
-        }catch (Exception e){
-            LOGGER.error("async all throws exception:{}", e);
+        CacheResultKey cacheResultKey = new CacheResultKey(
+                method.getDeclaringClass().getName(),
+                method.getName(),
+                method.getParameterTypes(),
+                args,
+                serviceVersion,
+                serviceGroup);
+
+        Object obj = this.cacheResultManager.get(cacheResultKey);
+        if(obj == null){
+            obj = invokeSendRequestMethod(method, args);
+            if(obj != null){
+                cacheResultKey.setCacheTimeStamp(System.currentTimeMillis());
+                this.cacheResultManager.put(cacheResultKey, obj);
+            }
         }
-        return rpcFuture;
-
+        return obj;
     }
 
     private RpcProtocol<RpcRequest> createRequest(String className, String methodName, Object[] args) {

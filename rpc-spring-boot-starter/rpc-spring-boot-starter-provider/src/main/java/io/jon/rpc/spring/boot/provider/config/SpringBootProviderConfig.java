@@ -36,10 +36,22 @@ public class SpringBootProviderConfig {
      */
     private int scanNotActiveChannelInterval;
 
+    boolean enableResultCache;
+
+    int resultCacheExpire;
+
     public SpringBootProviderConfig() {
     }
 
-    public SpringBootProviderConfig(final String serverAddress, final String registryAddress, final String registryType, final String registryLoadBalanceType, final String reflectType, final int heartbeatInterval, int scanNotActiveChannelInterval) {
+    public SpringBootProviderConfig(final String serverAddress,
+                                    final String registryAddress,
+                                    final String registryType,
+                                    final String registryLoadBalanceType,
+                                    final String reflectType,
+                                    final int heartbeatInterval,
+                                    int scanNotActiveChannelInterval,
+                                    final boolean enableResultCache,
+                                    final int resultCacheExpire) {
         this.serverAddress = serverAddress;
         this.registryAddress = registryAddress;
         this.registryType = registryType;
@@ -49,6 +61,8 @@ public class SpringBootProviderConfig {
             this.heartbeatInterval = heartbeatInterval;
         }
         this.scanNotActiveChannelInterval = scanNotActiveChannelInterval;
+        this.enableResultCache = enableResultCache;
+        this.resultCacheExpire = resultCacheExpire;
     }
 
 }

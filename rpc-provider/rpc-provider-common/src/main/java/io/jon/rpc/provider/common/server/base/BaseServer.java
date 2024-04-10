@@ -47,13 +47,22 @@ public class BaseServer implements Server {
 
     private ScheduledExecutorService executorService;
 
+    //是否开启结果缓存
+    private boolean enableResultCache;
+
+    //结果缓存过期时长，默认5秒
+    private int resultCacheExpire = 5000;
+
+
     public BaseServer(String serverAddress,
                       String registryAddress,
                       String registryType,
                       String reflectType,
                       String registryLoadBalanceType,
                       int heartbeatInterval,
-                      int scanNotActiveChannelInterval){
+                      int scanNotActiveChannelInterval,
+                      boolean enableResultCache,
+                      int resultCacheExpire){
 
         if(heartbeatInterval > 0){
             this.heartbeatInterval = heartbeatInterval;
@@ -69,6 +78,11 @@ public class BaseServer implements Server {
 
         this.reflectType = reflectType;
         this.registryService = this.getRegistryService(registryAddress, registryType, registryLoadBalanceType);
+
+        this.enableResultCache = enableResultCache;
+        if(resultCacheExpire > 0){
+            this.resultCacheExpire = resultCacheExpire;
+        }
     }
 
     private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
@@ -116,7 +130,7 @@ public class BaseServer implements Server {
                                     // 接收超时事件的方法是userEventTriggered
                                     .addLast(
                                             RpcConstants.CODEC_HANDLER,
-                                            new RpcProviderHandler(handlerMap, reflectType));
+                                            new RpcProviderHandler(handlerMap, reflectType, enableResultCache, resultCacheExpire));
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)

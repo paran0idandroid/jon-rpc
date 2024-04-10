@@ -10,10 +10,15 @@ public class RpcSingleServer extends BaseServer {
                            String registryType, String scanPackage, String reflectType,
                            String registryLoadBalanceType,
                            int heartbeatInterval,
-                           int scanNotActiveChannel) {
+                           int scanNotActiveChannel,
+                           boolean enableResultCache,
+                           int resultCacheExpire) {
 
-        super(serverAddress,registryAddress,registryType,reflectType,registryLoadBalanceType,
-                heartbeatInterval, scanNotActiveChannel);
+        super(
+                serverAddress, registryAddress,
+                registryType,reflectType,registryLoadBalanceType,
+                heartbeatInterval, scanNotActiveChannel,
+                enableResultCache, resultCacheExpire);
 
         try{
             this.handlerMap = RpcServiceScanner

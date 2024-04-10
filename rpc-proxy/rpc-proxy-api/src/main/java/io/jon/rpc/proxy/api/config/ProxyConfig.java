@@ -41,4 +41,15 @@ public class ProxyConfig<T> implements Serializable {
 
     // 是否单向调用
     private boolean oneway;
+
+    /**
+     * 是否开启结果缓存
+     */
+    private boolean enableResultCache;
+
+    /**
+     * 缓存结果的时长，单位是毫秒
+     */
+    private int resultCacheExpire;
+
 }

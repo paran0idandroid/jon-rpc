@@ -31,7 +31,9 @@ public class ConsumerNativeDemo {
                 3000,
                 6000,
                 1000,
-                3);
+                3,
+                true,
+                10000);
     }
 
     public static void main(String[] args) {
@@ -50,7 +52,9 @@ public class ConsumerNativeDemo {
                 3000,
                 6000,
                 1000,
-                3);
+                3,
+                false,
+                10000);
         // 这里一开始就传错了
         DemoService demoService = rpcClient.create(DemoService.class);
 
