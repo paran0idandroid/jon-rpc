@@ -182,6 +182,16 @@ public class RpcConstants {
      */
     public static final int RPC_REFERENCE_DEFAULT_RETRYTIMES = 3;
 
+    /**
+     * IP和端口的分隔符
+     */
+    public static final String IP_PORT_SPLIT = ":";
+
+    /**
+     *
+     */
+    public static final String RPC_COMMON_DEFAULT_DIRECT_SERVER = "";
+
 
 
 }

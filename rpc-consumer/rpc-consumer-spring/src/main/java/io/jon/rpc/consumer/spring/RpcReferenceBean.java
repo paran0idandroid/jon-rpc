@@ -85,6 +85,17 @@ public class RpcReferenceBean implements FactoryBean<Object> {
 
     private RpcClient rpcClient;
 
+    /**
+     * 是否开启直连服务
+     */
+    private boolean enableDirectServer;
+
+    /**
+     * 直连服务的地址
+     */
+    private String directServerUrl;
+
+
 
     @Override
     public Class<?> getObjectType() {
@@ -100,14 +111,15 @@ public class RpcReferenceBean implements FactoryBean<Object> {
     public void init() throws RuntimeException{
 
         rpcClient = new RpcClient(
-                registryAddress, registryType, proxy,
+                registryAddress, registryType,
+                loadBalanceType, proxy,
                 version, group,
-                timeout, serializationType,
+                serializationType, timeout,
                 async, oneway,
-                loadBalanceType,
                 heartbeatInterval, scanNotActiveChannelInterval,
                 retryInterval, retryTimes,
-                enableResultCache, resultCacheExpire
+                enableResultCache, resultCacheExpire,
+                enableDirectServer, directServerUrl
         );
 
         this.object = rpcClient.create(interfaceClass);

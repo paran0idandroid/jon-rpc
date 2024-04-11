@@ -33,9 +33,6 @@ public class ProxyConfig<T> implements Serializable {
     // 序列化类型
     private String serializationType;
 
-    // 消息类型
-//    private int messageType;
-
     // 是否异步调用
     private boolean async;
 

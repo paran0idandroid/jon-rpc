@@ -20,20 +20,22 @@ public class ConsumerNativeDemo {
         rpcClient = new RpcClient(
                 "127.0.0.1:2181",
                 "zookeeper",
+                "enhanced_leastconnections",
                 "cglib",
                 "1.0.0",
                 "jon",
-                3000,
                 "protostuff",
+                3000,
                 false,
                 false,
-                "enhanced_leastconnections",
                 3000,
                 6000,
                 1000,
                 3,
                 true,
-                10000);
+                10000,
+                true,
+                "127.0.0.1:27880");
     }
 
     public static void main(String[] args) {
@@ -41,20 +43,22 @@ public class ConsumerNativeDemo {
         RpcClient rpcClient = new RpcClient(
                 "127.0.0.1:2181",
                 "zookeeper",
+                "enhanced_leastconnections",
                 "cglib",
                 "1.0.0",
                 "jon",
-                3000,
                 "protostuff",
+                3000,
                 false,
                 false,
-                "enhanced_leastconnections",
                 3000,
                 6000,
                 1000,
                 3,
-                false,
-                10000);
+                true,
+                10000,
+                true,
+                "127.0.0.1:27880");
         // 这里一开始就传错了
         DemoService demoService = rpcClient.create(DemoService.class);
 

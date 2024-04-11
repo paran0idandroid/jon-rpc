@@ -97,5 +97,16 @@ public @interface RpcReference {
      */
     int resultCacheExpire() default RpcConstants.RPC_SCAN_RESULT_CACHE_EXPIRE;
 
+    /**
+     * 是否开启直连服务
+     */
+    boolean enableDirectServer() default false;
+
+    /**
+     * 直连服务的地址
+     */
+    String directServerUrl() default RpcConstants.RPC_COMMON_DEFAULT_DIRECT_SERVER;
+
+
 
 }
