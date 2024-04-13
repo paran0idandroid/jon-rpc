@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author binghe(公众号：冰河技术)
  * @version 1.0.0
  * @description 目标类访问器
  */

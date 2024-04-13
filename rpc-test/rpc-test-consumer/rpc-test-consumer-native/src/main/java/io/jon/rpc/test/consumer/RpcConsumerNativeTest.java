@@ -19,36 +19,44 @@ public class RpcConsumerNativeTest {
     public void initRpcClient(){
         rpcClient = new RpcClient("127.0.0.1:2181",
                 "zookeeper",
+                "enhanced_leastconnections",
                 "cglib",
                 "1.0.0",
                 "jon",
-                3000,
                 "protostuff",
+                3000,
                 false,
                 false,
-                "enhanced_leastconnections",
                 3000,
                 6000,
                 1000,
-                3);
+                3,
+                false,
+                1000,
+                false,
+                "");
     }
 
     public static void main(String[] args) {
 
         RpcClient rpcClient = new RpcClient("127.0.0.1:2181",
                 "zookeeper",
+                "enhanced_leastconnections",
                 "cglib",
                 "1.0.0",
                 "jon",
-                3000,
                 "protostuff",
+                3000,
                 false,
                 false,
-                "enhanced_leastconnections",
                 3000,
                 6000,
                 1000,
-                3);
+                3,
+                false,
+                1000,
+                false,
+                "");
         // 这里一开始就传错了
         DemoService demoService = rpcClient.create(DemoService.class);
 

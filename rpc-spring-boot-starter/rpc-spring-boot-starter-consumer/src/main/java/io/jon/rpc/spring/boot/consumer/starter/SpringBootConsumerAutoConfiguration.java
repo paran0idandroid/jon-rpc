@@ -12,7 +12,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@Configuration(value = "springBootConsumerAutoConfiguration")
 // @EnableConfigurationProperties 是一个 Spring Boot 注解
 // 它的作用是启用对@ConfigurationProperties注解类的支持
 // 在 Spring Boot 应用中，@ConfigurationProperties 用于绑定和验证属性文件中的属性值
@@ -28,10 +28,11 @@ public class SpringBootConsumerAutoConfiguration {
         return new SpringBootConsumerConfig();
     }
 
-    @Bean
-    public RpcClient rpcClient(final SpringBootConsumerConfig springBootConsumerConfig){
-        return parseRpcClient(springBootConsumerConfig);
-    }
+    // 不知道为何不需要了
+//    @Bean
+//    public RpcClient rpcClient(final SpringBootConsumerConfig springBootConsumerConfig){
+//        return parseRpcClient(springBootConsumerConfig);
+//    }
 
     private RpcClient parseRpcClient(final SpringBootConsumerConfig springBootConsumerConfig){
         RpcReferenceBean rpcReferenceBean = getRpcReferenceBean(springBootConsumerConfig);

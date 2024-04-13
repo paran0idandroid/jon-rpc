@@ -20,7 +20,6 @@ import io.jon.rpc.annotation.RpcService;
 import io.jon.rpc.test.scanner.service.DemoService;
 
 /**
- * @author binghe
  * @version 1.0.0
  * @description DemoService实现类
  */

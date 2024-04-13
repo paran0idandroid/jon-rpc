@@ -2,6 +2,7 @@ package io.jon.rpc.consumer.spring;
 
 import io.jon.rpc.annotation.RpcReference;
 import io.jon.rpc.constants.RpcConstants;
+import io.jon.rpc.consumer.spring.context.RpcConsumerSpringContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -48,6 +49,7 @@ public class RpcConsumerPostProcessor
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
+        RpcConsumerSpringContext.getInstance().setContext(applicationContext);
     }
 
     @Override

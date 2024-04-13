@@ -35,7 +35,7 @@ public class ConsumerNativeDemo {
                 true,
                 10000,
                 true,
-                "127.0.0.1:27880");
+                "127.0.0.1:27880,127.0.0.1:27880,127.0.0.1:27880");
     }
 
     public static void main(String[] args) {
@@ -58,7 +58,7 @@ public class ConsumerNativeDemo {
                 true,
                 10000,
                 true,
-                "127.0.0.1:27880");
+                "127.0.0.1:27880,127.0.0.1:27880,127.0.0.1:27880");
         // 这里一开始就传错了
         DemoService demoService = rpcClient.create(DemoService.class);
 

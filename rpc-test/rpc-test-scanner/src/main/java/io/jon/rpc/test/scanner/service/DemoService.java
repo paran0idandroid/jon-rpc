@@ -16,7 +16,6 @@
 package io.jon.rpc.test.scanner.service;
 
 /**
- * @author binghe
  * @version 1.0.0
  * @description 测试@RpcService注解的扫描
  */

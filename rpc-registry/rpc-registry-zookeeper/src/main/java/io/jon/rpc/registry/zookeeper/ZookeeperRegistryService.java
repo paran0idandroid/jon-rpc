@@ -30,34 +30,38 @@ public class ZookeeperRegistryService implements RegistryService {
     public static final int MAX_RETRIES = 3;
     public static final String ZK_BASE_PATH = "/jon_rpc";
 
-    private ServiceDiscovery serviceDiscovery;
+    private ServiceDiscovery<ServiceMeta> serviceDiscovery;
+    //负载均衡接口
+    private ServiceLoadBalancer<ServiceMeta> serviceLoadBalancer;
 
-    private ServiceLoadBalancer<ServiceInstance<ServiceMeta>> serviceLoadBalancer;
-    private ServiceLoadBalancer<ServiceMeta> serviceEnhancedLoadBalancer;
+    @Override
+    public void init(RegistryConfig registryConfig) throws Exception {
+        CuratorFramework client = CuratorFrameworkFactory.newClient(registryConfig.getRegistryAddr(), new ExponentialBackoffRetry(BASE_SLEEP_TIME_MS, MAX_RETRIES));
+        client.start();
+        JsonInstanceSerializer<ServiceMeta> serializer = new JsonInstanceSerializer<>(ServiceMeta.class);
+        this.serviceDiscovery = ServiceDiscoveryBuilder.builder(ServiceMeta.class)
+                .client(client)
+                .serializer(serializer)
+                .basePath(ZK_BASE_PATH)
+                .build();
+        this.serviceDiscovery.start();
+        this.serviceLoadBalancer = ExtensionLoader.getExtension(ServiceLoadBalancer.class, registryConfig.getRegistryLoadBalanceType());
+    }
 
-    private final Logger logger = LoggerFactory.getLogger(ZookeeperRegistryService.class);
     @Override
     public void register(ServiceMeta serviceMeta) throws Exception {
-
-        logger.info("=======注册实例到zookeeper注册中心=======");
         ServiceInstance<ServiceMeta> serviceInstance = ServiceInstance
                 .<ServiceMeta>builder()
-                .name(RpcServiceHelper.buildServiceKey(
-                        serviceMeta.getServiceName(),
-                        serviceMeta.getServiceVersion(),
-                        serviceMeta.getServiceGroup()
-                ))
+                .name(RpcServiceHelper.buildServiceKey(serviceMeta.getServiceName(), serviceMeta.getServiceVersion(), serviceMeta.getServiceGroup()))
                 .address(serviceMeta.getServiceAddr())
                 .port(serviceMeta.getServicePort())
                 .payload(serviceMeta)
                 .build();
-
         serviceDiscovery.registerService(serviceInstance);
     }
 
     @Override
     public void unRegister(ServiceMeta serviceMeta) throws Exception {
-
         ServiceInstance<ServiceMeta> serviceInstance = ServiceInstance
                 .<ServiceMeta>builder()
                 .name(serviceMeta.getServiceName())
@@ -65,75 +69,23 @@ public class ZookeeperRegistryService implements RegistryService {
                 .port(serviceMeta.getServicePort())
                 .payload(serviceMeta)
                 .build();
-
         serviceDiscovery.unregisterService(serviceInstance);
-
     }
 
     @Override
     public ServiceMeta discovery(String serviceName, int invokerHashCode, String sourceIp) throws Exception {
+        Collection<ServiceInstance<ServiceMeta>> serviceInstances = serviceDiscovery.queryForInstances(serviceName);
+        return this.serviceLoadBalancer.select(ServiceLoadBalancerHelper.getServiceMetaList((List<ServiceInstance<ServiceMeta>>) serviceInstances), invokerHashCode, sourceIp);
+    }
 
-        logger.info("=======从zookeeper注册中心发现实例=======");
-        Collection<ServiceInstance<ServiceMeta>> serviceInstances =
-                serviceDiscovery.queryForInstances(serviceName);
-
-        if(serviceLoadBalancer != null){
-            return getServiceMetaInstance(invokerHashCode, sourceIp,
-                    (List<ServiceInstance<ServiceMeta>>) serviceInstances);
-        }
-        return this.serviceEnhancedLoadBalancer.select(
-                ServiceLoadBalancerHelper.getServiceMetaList(
-                        (List<ServiceInstance<ServiceMeta>>) serviceInstances), invokerHashCode, sourceIp);
+    @Override
+    public ServiceMeta select(List<ServiceMeta> serviceMetaList, int invokerHashCode, String sourceIp) {
+        return this.serviceLoadBalancer.select(serviceMetaList, invokerHashCode, sourceIp);
     }
 
     @Override
     public void destroy() throws IOException {
-
         serviceDiscovery.close();
     }
-
-    @Override
-    public void init(RegistryConfig registryConfig) throws Exception {
-        CuratorFramework client = CuratorFrameworkFactory.newClient(
-                registryConfig.getRegistryAddr(),
-                new ExponentialBackoffRetry(BASE_SLEEP_TIME_MS, MAX_RETRIES));
-
-        client.start();
-        JsonInstanceSerializer<ServiceMeta> serializer = new JsonInstanceSerializer<>(ServiceMeta.class);
-
-        this.serviceDiscovery = ServiceDiscoveryBuilder
-                .builder(ServiceMeta.class)
-                .client(client)
-                .serializer(serializer)
-                .basePath(ZK_BASE_PATH)
-                .build();
-        this.serviceDiscovery.start();
-
-
-        //增强型负载均衡策略
-        if(registryConfig
-                .getRegistryLoadBalanceType()
-                .toLowerCase()
-                .contains(RpcConstants.SERVICE_ENHANCED_LOAD_BALANCER_PREFIX)){
-            this.serviceEnhancedLoadBalancer =
-                    ExtensionLoader.getExtension(
-                            ServiceLoadBalancer.class,
-                            registryConfig.getRegistryLoadBalanceType());
-        }else{
-
-            this.serviceLoadBalancer = ExtensionLoader.getExtension(
-                    ServiceLoadBalancer.class,
-                    registryConfig.getRegistryLoadBalanceType()
-            );
-        }
-    }
-
-    private ServiceMeta getServiceMetaInstance(int invokerHashCode, String sourceIp, List<ServiceInstance<ServiceMeta>> serviceInstances){
-
-        ServiceInstance<ServiceMeta> instance = this.serviceLoadBalancer.select(serviceInstances, invokerHashCode, sourceIp);
-        if(instance != null){
-            return instance.getPayload();
-        }
-        return null;
-    }
 }
+
