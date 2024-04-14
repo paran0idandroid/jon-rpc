@@ -70,10 +70,9 @@ public class ConsumerNativeDemo {
     @Test
     public void testInterfaceRpc() throws InterruptedException {
         DemoService demoService = rpcClient.create(DemoService.class);
-        for (int i = 0; i < 5; i++){
-            String result = demoService.hello("kendrick lamar");
-            LOGGER.info("返回的结果数据===>>> " + result);
-        }
+        Thread.sleep(5000);
+        String result = demoService.hello("kdot");
+        LOGGER.info("返回的结果数据===>>> " + result);
         //rpcClient.shutdown();
         while (true){
             Thread.sleep(1000);

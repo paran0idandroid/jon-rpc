@@ -1,7 +1,6 @@
 package io.jon.rpc.test.consumer.handler;
 
 import io.jon.rpc.common.exception.RegistryException;
-import io.jon.rpc.constants.RpcConstants;
 import io.jon.rpc.consumer.common.RpcConsumer;
 import io.jon.rpc.consumer.common.context.RpcContext;
 import io.jon.rpc.protocol.RpcProtocol;
@@ -12,9 +11,7 @@ import io.jon.rpc.proxy.api.callback.AsyncRPCCallback;
 import io.jon.rpc.proxy.api.future.RPCFuture;
 import io.jon.rpc.registry.api.RegistryService;
 import io.jon.rpc.registry.api.config.RegistryConfig;
-import io.jon.rpc.registry.zookeeper.ZookeeperRegistryService;
 import io.jon.rpc.spi.loader.ExtensionLoader;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;

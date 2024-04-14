@@ -8,7 +8,6 @@ import io.jon.rpc.proxy.api.config.ProxyConfig;
 import io.jon.rpc.proxy.api.object.ObjectProxy;
 import io.jon.rpc.registry.api.RegistryService;
 import io.jon.rpc.registry.api.config.RegistryConfig;
-import io.jon.rpc.registry.zookeeper.ZookeeperRegistryService;
 import io.jon.rpc.spi.loader.ExtensionLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,9 +1,7 @@
 package io.jon.rpc.loadbalancer.consistenthash;
 
 import io.jon.rpc.loadbalancer.api.ServiceLoadBalancer;
-import io.jon.rpc.protocol.meta.ServiceMeta;
 import io.jon.rpc.spi.annotation.SPIClass;
-import org.apache.curator.x.discovery.ServiceInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

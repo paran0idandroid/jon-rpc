@@ -1,7 +1,6 @@
 package io.jon.rpc.registry.zookeeper;
 
 import io.jon.rpc.common.helper.RpcServiceHelper;
-import io.jon.rpc.constants.RpcConstants;
 import io.jon.rpc.loadbalancer.api.ServiceLoadBalancer;
 import io.jon.rpc.loadbalancer.helper.ServiceLoadBalancerHelper;
 import io.jon.rpc.protocol.meta.ServiceMeta;
@@ -16,8 +15,6 @@ import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;
 import org.apache.curator.x.discovery.ServiceInstance;
 import org.apache.curator.x.discovery.details.JsonInstanceSerializer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Collection;

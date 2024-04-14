@@ -28,7 +28,8 @@ public class SpringBootConsumerAutoConfiguration {
         return new SpringBootConsumerConfig();
     }
 
-    // 不知道为何不需要了
+    // starter的消费者用不上，因为可以直接通过注解获得代理
+    // starter配置那么多其实在@RpcReference注解上已经配置过了
 //    @Bean
 //    public RpcClient rpcClient(final SpringBootConsumerConfig springBootConsumerConfig){
 //        return parseRpcClient(springBootConsumerConfig);
