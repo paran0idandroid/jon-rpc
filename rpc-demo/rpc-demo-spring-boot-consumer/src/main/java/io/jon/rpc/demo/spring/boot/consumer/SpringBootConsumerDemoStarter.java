@@ -12,9 +12,10 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages = {"io.jon.rpc"})
 public class SpringBootConsumerDemoStarter {
     private static final Logger LOGGER = LoggerFactory.getLogger(SpringBootConsumerDemoStarter.class);
-    public static void main(String[] args){
+    public static void main(String[] args) throws InterruptedException {
         ConfigurableApplicationContext context = SpringApplication.run(SpringBootConsumerDemoStarter.class, args);
         ConsumerDemoService consumerDemoService = context.getBean(ConsumerDemoService.class);
+        Thread.sleep(3000);
         String result = consumerDemoService.hello("kobe");
         LOGGER.info("返回的结果数据===>>> " + result);
     }

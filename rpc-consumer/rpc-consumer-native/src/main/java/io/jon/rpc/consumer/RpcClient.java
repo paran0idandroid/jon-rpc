@@ -86,6 +86,11 @@ public class RpcClient {
      */
     private String directServerUrl;
 
+    /**
+     * 是否开启延迟连接
+     */
+    private boolean enableDelayConnection = false;
+
     public RpcClient(String registryAddress, String registryType,
                      String registryLoadBalanceType, String proxy,
                      String serviceVersion, String serviceGroup,
@@ -93,7 +98,8 @@ public class RpcClient {
                      boolean oneway, int heartbeatInterval,
                      int scanNotActiveChannelInterval, int retryInterval,
                      int retryTimes, boolean enableResultCache,
-                     int resultCacheExpire, boolean enableDirectServer, String directServerUrl) {
+                     int resultCacheExpire, boolean enableDirectServer, String directServerUrl,
+                     boolean enableDelayConnection) {
         this.serviceVersion = serviceVersion;
         this.proxy = proxy;
         this.timeout = timeout;
@@ -110,6 +116,7 @@ public class RpcClient {
         this.enableDirectServer = enableDirectServer;
         this.directServerUrl = directServerUrl;
         this.registryService = this.getRegistryService(registryAddress, registryType, registryLoadBalanceType);
+        this.enableDelayConnection = enableDelayConnection;
     }
 
     private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
@@ -137,7 +144,9 @@ public class RpcClient {
                         .setDirectServerUrl(directServerUrl)
                         .setEnableDirectServer(enableDirectServer)
                         .setRetryTimes(retryTimes)
-                        .setScanNotActiveChannelInterval(scanNotActiveChannelInterval),
+                        .setScanNotActiveChannelInterval(scanNotActiveChannelInterval)
+                        .setEnableDelayConnection(enableDelayConnection)
+                        .buildConnection(registryService),
                 serializationType,
                 async, oneway,
                 enableResultCache, resultCacheExpire));
@@ -154,7 +163,9 @@ public class RpcClient {
                         .setDirectServerUrl(directServerUrl)
                         .setEnableDirectServer(enableDirectServer)
                         .setRetryTimes(retryTimes)
-                        .setScanNotActiveChannelInterval(scanNotActiveChannelInterval),
+                        .setScanNotActiveChannelInterval(scanNotActiveChannelInterval)
+                        .setEnableDelayConnection(enableDelayConnection)
+                        .buildConnection(registryService),
                 serializationType,
                 async, oneway,
                 enableResultCache, resultCacheExpire);

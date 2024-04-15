@@ -52,4 +52,9 @@ public interface RegistryService {
      */
     ServiceMeta select(List<ServiceMeta> serviceMetaList, int invokerHashCode, String sourceIp);
 
+    /**
+     * 获取所有的数据
+     */
+    List<ServiceMeta> discoveryAll() throws Exception;
+
 }
