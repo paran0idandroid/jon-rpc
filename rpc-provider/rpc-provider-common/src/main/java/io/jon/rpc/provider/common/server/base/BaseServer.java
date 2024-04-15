@@ -53,6 +53,12 @@ public class BaseServer implements Server {
     //结果缓存过期时长，默认5秒
     private int resultCacheExpire = 5000;
 
+    //核心线程数
+    private int corePoolSize;
+    //最大线程数
+    private int maximumPoolSize;
+
+
 
     public BaseServer(String serverAddress,
                       String registryAddress,
@@ -62,7 +68,9 @@ public class BaseServer implements Server {
                       int heartbeatInterval,
                       int scanNotActiveChannelInterval,
                       boolean enableResultCache,
-                      int resultCacheExpire){
+                      int resultCacheExpire,
+                      int corePoolSize,
+                      int maximumPoolSize){
 
         if(heartbeatInterval > 0){
             this.heartbeatInterval = heartbeatInterval;
@@ -83,6 +91,9 @@ public class BaseServer implements Server {
         if(resultCacheExpire > 0){
             this.resultCacheExpire = resultCacheExpire;
         }
+        this.corePoolSize = corePoolSize;
+        this.maximumPoolSize = maximumPoolSize;
+
     }
 
     private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
@@ -130,7 +141,9 @@ public class BaseServer implements Server {
                                     // 接收超时事件的方法是userEventTriggered
                                     .addLast(
                                             RpcConstants.CODEC_HANDLER,
-                                            new RpcProviderHandler(handlerMap, reflectType, enableResultCache, resultCacheExpire));
+                                            new RpcProviderHandler(
+                                                    reflectType, enableResultCache, resultCacheExpire,
+                                                    corePoolSize, maximumPoolSize, handlerMap));
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)

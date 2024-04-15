@@ -197,6 +197,27 @@ public class RpcConstants {
      */
     public static final String RPC_MULTI_DIRECT_SERVERS_SEPARATOR = ",";
 
+    /**
+     * 默认的核心线程数
+     */
+    public static final int DEFAULT_CORE_POOL_SIZE = 16;
+
+    /**
+     * 默认的最大线程数
+     */
+    public static final int DEFAULT_MAXI_NUM_POOL_SIZE = 16;
+
+    /**
+     * 默认空闲保持时间
+     */
+    public static final long DEFAULT_KEEP_ALIVE_TIME = 600;
+
+    /**
+     * 线程池队列最大容量
+     */
+    public static final int DEFAULT_QUEUE_CAPACITY = 65536;
+
+
 
 
 }
