@@ -4,7 +4,7 @@ import io.jon.rpc.protocol.RpcProtocol;
 import io.jon.rpc.protocol.request.RpcRequest;
 import io.jon.rpc.protocol.response.RpcResponse;
 import io.jon.rpc.proxy.api.callback.AsyncRPCCallback;
-import io.jon.rpc.threadpool.ClientThreadPool;
+import io.jon.rpc.threadpool.ConcurrentThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,10 +34,13 @@ public class RPCFuture extends CompletableFuture<Object> {
     // 添加和执行回调方法时，进行加锁和解锁操作
     private ReentrantLock lock = new ReentrantLock();
 
-    public RPCFuture(RpcProtocol<RpcRequest> requestRpcProtocol){
+    private ConcurrentThreadPool concurrentThreadPool;
+
+    public RPCFuture(RpcProtocol<RpcRequest> requestRpcProtocol, ConcurrentThreadPool concurrentThreadPool){
         this.sync = new Sync();
         this.requestRpcProtocol = requestRpcProtocol;
         this.startTime = System.currentTimeMillis();
+        this.concurrentThreadPool = concurrentThreadPool;
     }
 
     @Override
@@ -130,7 +133,7 @@ public class RPCFuture extends CompletableFuture<Object> {
     private void runCallback(final AsyncRPCCallback callback){
 
         final RpcResponse res = this.responseRpcProtocol.getBody();
-        ClientThreadPool.submit(()->{
+        concurrentThreadPool.submit(()->{
             if(!res.isError()){
                 callback.onSuccess(res.getResult());
             }else{

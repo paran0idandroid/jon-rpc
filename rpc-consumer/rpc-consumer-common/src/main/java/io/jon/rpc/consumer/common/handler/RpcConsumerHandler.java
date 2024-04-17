@@ -12,6 +12,7 @@ import io.jon.rpc.protocol.header.RpcHeaderFactory;
 import io.jon.rpc.protocol.request.RpcRequest;
 import io.jon.rpc.protocol.response.RpcResponse;
 import io.jon.rpc.proxy.api.future.RPCFuture;
+import io.jon.rpc.threadpool.ConcurrentThreadPool;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
@@ -29,19 +30,26 @@ public class RpcConsumerHandler extends
         SimpleChannelInboundHandler<RpcProtocol<RpcResponse>> {
 
     private final Logger logger = LoggerFactory.getLogger(RpcConsumerHandler.class);
-
     private volatile Channel channel;
     private SocketAddress remotePeer;
 
     //存储请求ID与RpcResponse协议的映射关系
     private Map<Long, RPCFuture> pendingRpc = new ConcurrentHashMap<>();
-    public Channel getChannel(){
+
+    private ConcurrentThreadPool concurrentThreadPool;
+
+    public RpcConsumerHandler(ConcurrentThreadPool concurrentThreadPool){
+        this.concurrentThreadPool = concurrentThreadPool;
+    }
+
+    public Channel getChannel() {
         return channel;
     }
 
-    public SocketAddress getRemotePeer(){
+    public SocketAddress getRemotePeer() {
         return remotePeer;
     }
+
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception{
@@ -79,7 +87,10 @@ public class RpcConsumerHandler extends
 
         logger.info("服务消费者接收到的数据===>>>{}", JSONObject.toJSONString(protocol));
 
-        this.handlerMessage(protocol);
+//        this.handlerMessage(protocol);
+        concurrentThreadPool.submit(()->{
+            this.handlerMessage(protocol, ctx.channel());
+        });
     }
 
     @Override
@@ -100,13 +111,13 @@ public class RpcConsumerHandler extends
     }
 
 
-    private void handlerMessage(RpcProtocol<RpcResponse> protocol) {
+    private void handlerMessage(RpcProtocol<RpcResponse> protocol, Channel channel) {
 
         RpcHeader header = protocol.getHeader();
 
         //消费者接收到服务提供者的 响应心跳消息 pong
         if(header.getMsgType() == (byte) RpcType.HEARTBEAT_TO_CONSUMER.getType()){
-            this.handlerHeartbeatMessageToConsumer(protocol);
+            this.handlerHeartbeatMessageToConsumer(protocol, channel);
         }else if (header.getMsgType() == (byte) RpcType.HEARTBEAT_FROM_PROVIDER.getType()){
             // 消费者接收到ping 所以需要返回pong
             this.handlerHeartbeatMessageFromProvider(protocol, channel);
@@ -125,7 +136,7 @@ public class RpcConsumerHandler extends
         }
     }
 
-    private void handlerHeartbeatMessageToConsumer(RpcProtocol<RpcResponse> protocol) {
+    private void handlerHeartbeatMessageToConsumer(RpcProtocol<RpcResponse> protocol, Channel channel) {
         // 服务提供者响应的心跳消息 收到pong
         logger.info(
                 "receive service provider ===pong pong pong=== heartbeat message" +
@@ -152,50 +163,35 @@ public class RpcConsumerHandler extends
     /**
      * 服务消费者向服务提供者发送请求
      */
-    public RPCFuture sendRequest(RpcProtocol<RpcRequest> protocol,
-                                 boolean async,
-                                 boolean oneway){
-
+    public RPCFuture sendRequest(RpcProtocol<RpcRequest> protocol, boolean async, boolean oneway){
         logger.info("服务消费者发送的数据===>>>{}", JSONObject.toJSONString(protocol));
-
-        return oneway ?
-                this.sendRequestOneway(protocol) :
-                async ?
-                        this.sendRequestAsync(protocol) : this.sendRequestSync(protocol);
+        return concurrentThreadPool.submit(() -> {
+            return oneway ? this.sendRequestOneway(protocol) : async ? sendRequestAsync(protocol) : this.sendRequestSync(protocol);
+        });
     }
 
-    /**
-     * 同步调用
-     */
-    private RPCFuture sendRequestSync(RpcProtocol<RpcRequest> protocol){
+    private RPCFuture sendRequestSync(RpcProtocol<RpcRequest> protocol) {
         RPCFuture rpcFuture = this.getRpcFuture(protocol);
-        //消费者将消息发送出去之后，channelRead0会将服务提供者返回的数据设置到rpcFuture中
         channel.writeAndFlush(protocol);
         return rpcFuture;
     }
 
-    /**
-     * 异步调用
-     */
-    private RPCFuture sendRequestAsync(RpcProtocol<RpcRequest> protocol){
 
+    private RPCFuture sendRequestAsync(RpcProtocol<RpcRequest> protocol) {
         RPCFuture rpcFuture = this.getRpcFuture(protocol);
-        //异步调用，将RPCFuture放进RpcContext中
-        RpcContext.getContext().setRpcFuture(rpcFuture);
+        //如果是异步调用，则将RPCFuture放入RpcContext
+        RpcContext.getContext().setRPCFuture(rpcFuture);
         channel.writeAndFlush(protocol);
         return null;
     }
 
-    /**
-     * 单向调用
-     */
-    private RPCFuture sendRequestOneway(RpcProtocol<RpcRequest> protocol){
+    private RPCFuture sendRequestOneway(RpcProtocol<RpcRequest> protocol) {
         channel.writeAndFlush(protocol);
         return null;
     }
 
     private RPCFuture getRpcFuture(RpcProtocol<RpcRequest> protocol){
-        RPCFuture rpcFuture = new RPCFuture(protocol);
+        RPCFuture rpcFuture = new RPCFuture(protocol, concurrentThreadPool);
         RpcHeader header = protocol.getHeader();
         long requestId = header.getRequestId();
         pendingRpc.put(requestId, rpcFuture);

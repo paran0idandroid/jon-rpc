@@ -33,7 +33,7 @@ public class RpcContext {
      * 将RPCFuture保存到线程上下文
      * @param rpcFuture
      */
-    public void setRpcFuture(RPCFuture rpcFuture){
+    public void setRPCFuture(RPCFuture rpcFuture){
         RPC_FUTURE_INHERITABLE_THREAD_LOCAL.set(rpcFuture);
     }
 

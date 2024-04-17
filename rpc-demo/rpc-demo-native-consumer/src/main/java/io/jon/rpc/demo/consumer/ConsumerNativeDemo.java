@@ -36,39 +36,10 @@ public class ConsumerNativeDemo {
                 10000,
                 true,
                 "127.0.0.1:27880,127.0.0.1:27880,127.0.0.1:27880",
-                true);
+                true,
+                16,
+                16);
     }
-
-//    public static void main(String[] args) {
-//
-//        RpcClient rpcClient = new RpcClient(
-//                "127.0.0.1:2181",
-//                "zookeeper",
-//                "enhanced_leastconnections",
-//                "cglib",
-//                "1.0.0",
-//                "jon",
-//                "protostuff",
-//                3000,
-//                false,
-//                false,
-//                3000,
-//                6000,
-//                1000,
-//                3,
-//                true,
-//                10000,
-//                true,
-//                "127.0.0.1:27880,127.0.0.1:27880,127.0.0.1:27880",
-//                false);
-//        // 这里一开始就传错了
-//        DemoService demoService = rpcClient.create(DemoService.class);
-//
-//        String result = demoService.hello("kevin durant");
-//        LOGGER.info("result: " + result);
-//    }
-
-
     @Test
     public void testInterfaceRpc() throws InterruptedException {
         DemoService demoService = rpcClient.create(DemoService.class);

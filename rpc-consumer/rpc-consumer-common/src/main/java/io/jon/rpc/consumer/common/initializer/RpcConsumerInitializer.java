@@ -4,6 +4,7 @@ import io.jon.rpc.codec.RpcDecoder;
 import io.jon.rpc.codec.RpcEncoder;
 import io.jon.rpc.constants.RpcConstants;
 import io.jon.rpc.consumer.common.handler.RpcConsumerHandler;
+import io.jon.rpc.threadpool.ConcurrentThreadPool;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -15,10 +16,13 @@ public class RpcConsumerInitializer extends ChannelInitializer<SocketChannel> {
 
     private int heartbeatInterval;
 
-    public RpcConsumerInitializer(int heartbeatInterval){
+    private ConcurrentThreadPool concurrentThreadPool;
+
+    public RpcConsumerInitializer(int heartbeatInterval, ConcurrentThreadPool concurrentThreadPool){
         if(heartbeatInterval > 0){
             this.heartbeatInterval = heartbeatInterval;
         }
+        this.concurrentThreadPool = concurrentThreadPool;
     }
 
 
@@ -34,6 +38,6 @@ public class RpcConsumerInitializer extends ChannelInitializer<SocketChannel> {
         cp.addLast(RpcConstants.CODEC_CLIENT_IDLE_HANDLER,
                 new IdleStateHandler(
                         heartbeatInterval, 0, 0, TimeUnit.MILLISECONDS));
-        cp.addLast(new RpcConsumerHandler());
+        cp.addLast(new RpcConsumerHandler(concurrentThreadPool));
     }
 }
