@@ -122,5 +122,11 @@ public @interface RpcReference {
      */
     int maximumPoolSize() default RpcConstants.DEFAULT_MAXI_NUM_POOL_SIZE;
 
+    /**
+     * 流控分析类型
+     */
+    String flowType() default RpcConstants.FLOW_POST_PROCESSOR_PRINT;
+
+
 
 }

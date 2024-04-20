@@ -17,7 +17,8 @@ public class RpcConsumerNativeTest {
 
     @Before
     public void initRpcClient(){
-        rpcClient = new RpcClient("127.0.0.1:2181",
+        rpcClient = new RpcClient(
+                "127.0.0.1:2181",
                 "zookeeper",
                 "enhanced_leastconnections",
                 "cglib",
@@ -31,15 +32,20 @@ public class RpcConsumerNativeTest {
                 6000,
                 1000,
                 3,
-                false,
-                1000,
-                false,
-                "");
+                true,
+                10000,
+                true,
+                "127.0.0.1:27880,127.0.0.1:27880,127.0.0.1:27880",
+                true,
+                16,
+                16,
+                "print");
     }
 
     public static void main(String[] args) {
 
-        RpcClient rpcClient = new RpcClient("127.0.0.1:2181",
+        RpcClient rpcClient = new RpcClient(
+                "127.0.0.1:2181",
                 "zookeeper",
                 "enhanced_leastconnections",
                 "cglib",
@@ -53,10 +59,14 @@ public class RpcConsumerNativeTest {
                 6000,
                 1000,
                 3,
-                false,
-                1000,
-                false,
-                "");
+                true,
+                10000,
+                true,
+                "127.0.0.1:27880,127.0.0.1:27880,127.0.0.1:27880",
+                true,
+                16,
+                16,
+                "print");
         // 这里一开始就传错了
         DemoService demoService = rpcClient.create(DemoService.class);
 

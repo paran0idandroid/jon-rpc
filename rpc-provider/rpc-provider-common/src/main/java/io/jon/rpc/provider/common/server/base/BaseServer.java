@@ -3,6 +3,7 @@ package io.jon.rpc.provider.common.server.base;
 import io.jon.rpc.codec.RpcDecoder;
 import io.jon.rpc.codec.RpcEncoder;
 import io.jon.rpc.constants.RpcConstants;
+import io.jon.rpc.flow.processor.FlowPostProcessor;
 import io.jon.rpc.provider.common.handler.RpcProviderHandler;
 import io.jon.rpc.provider.common.manager.ProviderConnectionManager;
 import io.jon.rpc.provider.common.server.api.Server;
@@ -57,7 +58,8 @@ public class BaseServer implements Server {
     private int corePoolSize;
     //最大线程数
     private int maximumPoolSize;
-
+    //流控分析后置处理器
+    private FlowPostProcessor flowPostProcessor;
 
 
     public BaseServer(String serverAddress,
@@ -70,7 +72,8 @@ public class BaseServer implements Server {
                       boolean enableResultCache,
                       int resultCacheExpire,
                       int corePoolSize,
-                      int maximumPoolSize){
+                      int maximumPoolSize,
+                      String flowType){
 
         if(heartbeatInterval > 0){
             this.heartbeatInterval = heartbeatInterval;
@@ -94,6 +97,8 @@ public class BaseServer implements Server {
         this.corePoolSize = corePoolSize;
         this.maximumPoolSize = maximumPoolSize;
 
+        // 通过SPI技术为flowPostProcessor成员变量赋值
+        this.flowPostProcessor = ExtensionLoader.getExtension(FlowPostProcessor.class, flowType);
     }
 
     private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
@@ -124,8 +129,8 @@ public class BaseServer implements Server {
                         @Override
                         protected void initChannel(SocketChannel channel) throws Exception {
                             channel.pipeline()
-                                    .addLast(RpcConstants.CODEC_DECODER, new RpcDecoder())
-                                    .addLast(RpcConstants.CODEC_ENCODER, new RpcEncoder())
+                                    .addLast(RpcConstants.CODEC_DECODER, new RpcDecoder(flowPostProcessor))
+                                    .addLast(RpcConstants.CODEC_ENCODER, new RpcEncoder(flowPostProcessor))
                                     .addLast(
                                             RpcConstants.CODEC_SERVER_IDLE_HANDLER,
                                             // readerIdleTime 读空闲超时检测定时任务在每readerIdleTime启动一次

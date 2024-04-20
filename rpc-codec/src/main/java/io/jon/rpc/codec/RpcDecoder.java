@@ -2,6 +2,7 @@ package io.jon.rpc.codec;
 
 import io.jon.rpc.common.utils.SerializationUtils;
 import io.jon.rpc.constants.RpcConstants;
+import io.jon.rpc.flow.processor.FlowPostProcessor;
 import io.jon.rpc.protocol.RpcProtocol;
 import io.jon.rpc.protocol.enumeration.RpcType;
 import io.jon.rpc.protocol.header.RpcHeader;
@@ -16,6 +17,12 @@ import io.netty.util.CharsetUtil;
 import java.util.List;
 
 public class RpcDecoder extends ByteToMessageDecoder implements RpcCodec {
+
+    private FlowPostProcessor flowPostProcessor;
+
+    public RpcDecoder(FlowPostProcessor flowPostProcessor){
+        this.flowPostProcessor = flowPostProcessor;
+    }
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
 
@@ -92,5 +99,7 @@ public class RpcDecoder extends ByteToMessageDecoder implements RpcCodec {
                 break;
         }
 
+        //异步调用流控分析后置处理器
+        this.postFlowProcessor(flowPostProcessor, header);
     }
 }

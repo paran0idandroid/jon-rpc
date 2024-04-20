@@ -9,6 +9,7 @@ import io.jon.rpc.consumer.common.handler.RpcConsumerHandler;
 import io.jon.rpc.consumer.common.helper.RpcConsumerHandlerHelper;
 import io.jon.rpc.consumer.common.initializer.RpcConsumerInitializer;
 import io.jon.rpc.consumer.common.manager.ConsumerConnectionManager;
+import io.jon.rpc.flow.processor.FlowPostProcessor;
 import io.jon.rpc.loadbalancer.context.ConnectionsContext;
 import io.jon.rpc.protocol.RpcProtocol;
 import io.jon.rpc.protocol.meta.ServiceMeta;
@@ -16,8 +17,10 @@ import io.jon.rpc.protocol.request.RpcRequest;
 import io.jon.rpc.proxy.api.consumer.Consumer;
 import io.jon.rpc.proxy.api.future.RPCFuture;
 import io.jon.rpc.registry.api.RegistryService;
+import io.jon.rpc.spi.loader.ExtensionLoader;
 import io.jon.rpc.threadpool.ClientThreadPool;
 import io.jon.rpc.threadpool.ConcurrentThreadPool;
+import io.jon.rpc.threadpool.FlowPostProcessorThreadPool;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -73,6 +76,10 @@ public class RpcConsumer implements Consumer {
     //并发处理线程池
     private ConcurrentThreadPool concurrentThreadPool;
 
+    //流控分析后置处理器
+    private FlowPostProcessor flowPostProcessor;
+
+
 
     private RpcConsumer() {
         localIp = IpUtils.getLocalHostIp();
@@ -124,9 +131,18 @@ public class RpcConsumer implements Consumer {
         return this;
     }
 
+    public RpcConsumer setFlowPostProcessor(String flowType){
+        if(StringUtils.isEmpty(flowType)){
+            flowType = RpcConstants.FLOW_POST_PROCESSOR_PRINT;
+        }
+
+        this.flowPostProcessor = ExtensionLoader.getExtension(FlowPostProcessor.class, flowType);
+        return this;
+    }
+
     public RpcConsumer buildNettyGroup(){
         bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class)
-                .handler(new RpcConsumerInitializer(heartbeatInterval, concurrentThreadPool));
+                .handler(new RpcConsumerInitializer(heartbeatInterval, concurrentThreadPool, flowPostProcessor));
         return this;
     }
 

@@ -14,14 +14,16 @@ public class RpcSingleServer extends BaseServer {
                            boolean enableResultCache,
                            int resultCacheExpire,
                            int corePoolSize,
-                           int maximumPoolSize) {
+                           int maximumPoolSize,
+                           String flowType) {
 
         super(
                 serverAddress, registryAddress,
                 registryType,reflectType,registryLoadBalanceType,
                 heartbeatInterval, scanNotActiveChannel,
                 enableResultCache, resultCacheExpire,
-                corePoolSize, maximumPoolSize);
+                corePoolSize, maximumPoolSize,
+                flowType);
 
         try{
             this.handlerMap = RpcServiceScanner

@@ -32,7 +32,8 @@ public class RpcSpringServer extends BaseServer
             boolean enableResultCache,
             int resultCacheExpire,
             int corePoolSize,
-            int maximumPoolSize
+            int maximumPoolSize,
+            String flowType
     ){
 
         super(
@@ -43,7 +44,8 @@ public class RpcSpringServer extends BaseServer
                 registryLoadBalanceType,
                 heartbeatInterval, scanNotActiveChannelInterval,
                 enableResultCache, resultCacheExpire,
-                corePoolSize, maximumPoolSize);
+                corePoolSize, maximumPoolSize,
+                flowType);
     }
 
     // setApplicationContext 方法通过实现 ApplicationContextAware 接口，获取了Spring容器的上下文对象

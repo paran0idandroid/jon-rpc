@@ -51,6 +51,16 @@ public class ScannerTest {
                      public void destroy() throws IOException {
 
                      }
+
+                     @Override
+                     public ServiceMeta select(List<ServiceMeta> serviceMetaList, int invokerHashCode, String sourceIp) {
+                         return null;
+                     }
+
+                     @Override
+                     public List<ServiceMeta> discoveryAll() throws Exception {
+                         return null;
+                     }
                  });
     }
 

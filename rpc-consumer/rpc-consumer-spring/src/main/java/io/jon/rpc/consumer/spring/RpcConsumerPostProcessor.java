@@ -107,6 +107,7 @@ public class RpcConsumerPostProcessor
             builder.addPropertyValue("enableDelayConnection", annotation.enableDelayConnection());
             builder.addPropertyValue("corePoolSize", annotation.corePoolSize());
             builder.addPropertyValue("maximumPoolSize", annotation.maximumPoolSize());
+            builder.addPropertyValue("flowType", annotation.flowType());
 
             BeanDefinition beanDefinition = builder.getBeanDefinition();
             rpcRefBeanDefinitions.put(field.getName(), beanDefinition);

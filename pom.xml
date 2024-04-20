@@ -28,6 +28,7 @@
         <module>rpc-demo</module>
         <module>rpc-spring-boot-starter</module>
         <module>rpc-cache</module>
+        <module>rpc-flow</module>
     </modules>
 
     <properties>
