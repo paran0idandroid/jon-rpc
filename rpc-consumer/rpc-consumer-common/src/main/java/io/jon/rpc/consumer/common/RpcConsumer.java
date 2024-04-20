@@ -20,7 +20,6 @@ import io.jon.rpc.registry.api.RegistryService;
 import io.jon.rpc.spi.loader.ExtensionLoader;
 import io.jon.rpc.threadpool.ClientThreadPool;
 import io.jon.rpc.threadpool.ConcurrentThreadPool;
-import io.jon.rpc.threadpool.FlowPostProcessorThreadPool;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;

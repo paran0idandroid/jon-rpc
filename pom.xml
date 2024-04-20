@@ -29,6 +29,8 @@
         <module>rpc-spring-boot-starter</module>
         <module>rpc-cache</module>
         <module>rpc-flow</module>
+        <module>rpc-disuse</module>
+        <module>rpc-connection</module>
     </modules>
 
     <properties>

@@ -3,6 +3,7 @@ package io.jon.rpc.provider.common.handler;
 import io.jon.rpc.cache.result.CacheResultKey;
 import io.jon.rpc.cache.result.CacheResultManager;
 import io.jon.rpc.common.helper.RpcServiceHelper;
+import io.jon.rpc.connection.manager.ConnectionManager;
 import io.jon.rpc.constants.RpcConstants;
 import io.jon.rpc.protocol.RpcProtocol;
 import io.jon.rpc.protocol.enumeration.RpcStatus;
@@ -66,9 +67,21 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
      */
     private final ConcurrentThreadPool concurrentThreadPool;
 
+    /**
+     * 连接管理器
+     */
+    private ConnectionManager connectionManager;
 
-    public RpcProviderHandler(String reflectType, boolean enableResultCache, int resultCacheExpire,
-                              int corePoolSize, int maximumPoolSize, Map<String, Object> handlerMap){
+
+
+    public RpcProviderHandler(String reflectType,
+                              boolean enableResultCache,
+                              int resultCacheExpire,
+                              int corePoolSize,
+                              int maximumPoolSize,
+                              Map<String, Object> handlerMap,
+                              int maxConnections,
+                              String disuseStrategyType){
         this.handlerMap = handlerMap;
         this.reflectInvoker = ExtensionLoader.getExtension(ReflectInvoker.class, reflectType);
         this.enableResultCache = enableResultCache;
@@ -77,6 +90,7 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
         }
         this.cacheResultManager = CacheResultManager.getInstance(resultCacheExpire, enableResultCache);
         this.concurrentThreadPool = ConcurrentThreadPool.getInstance(corePoolSize, maximumPoolSize);
+        this.connectionManager = ConnectionManager.getInstance(maxConnections, disuseStrategyType);
     }
 
 
@@ -84,23 +98,27 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         super.channelUnregistered(ctx);
         ProviderChannelCache.remove(ctx.channel());
+        connectionManager.remove(ctx.channel());
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         ProviderChannelCache.add(ctx.channel());
+        connectionManager.add(ctx.channel());
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
         ProviderChannelCache.remove(ctx.channel());
+        connectionManager.remove(ctx.channel());
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcProtocol<RpcRequest> protocol) throws Exception {
         concurrentThreadPool.submit(() -> {
+            connectionManager.update(ctx.channel());
             RpcProtocol<RpcResponse> responseRpcProtocol = handlerMessage(protocol, ctx.channel());
             ctx.writeAndFlush(responseRpcProtocol).addListener(new ChannelFutureListener() {
                 @Override
@@ -122,6 +140,7 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
             Channel channel = ctx.channel();
             try{
                 log.info("IdleStateEvent triggered, close channel " + channel);
+                connectionManager.remove(channel);
                 channel.close();
             }finally {
                 channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
@@ -264,5 +283,14 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 
         return this.reflectInvoker.invokeMethod(serviceBean, serviceClass, methodName, parameterTypes, parameters);
     }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        logger.error("server caught exception", cause);
+        ProviderChannelCache.remove(ctx.channel());
+        connectionManager.remove(ctx.channel());
+        ctx.close();
+    }
+
 
 }

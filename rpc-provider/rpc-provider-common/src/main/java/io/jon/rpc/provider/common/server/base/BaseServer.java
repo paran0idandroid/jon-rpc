@@ -60,7 +60,10 @@ public class BaseServer implements Server {
     private int maximumPoolSize;
     //流控分析后置处理器
     private FlowPostProcessor flowPostProcessor;
-
+    //最大连接限制
+    private int maxConnections;
+    //拒绝策略类型
+    private String disuseStrategyType;
 
     public BaseServer(String serverAddress,
                       String registryAddress,
@@ -73,7 +76,9 @@ public class BaseServer implements Server {
                       int resultCacheExpire,
                       int corePoolSize,
                       int maximumPoolSize,
-                      String flowType){
+                      String flowType,
+                      int maxConnections,
+                      String disuseStrategyType){
 
         if(heartbeatInterval > 0){
             this.heartbeatInterval = heartbeatInterval;
@@ -99,6 +104,10 @@ public class BaseServer implements Server {
 
         // 通过SPI技术为flowPostProcessor成员变量赋值
         this.flowPostProcessor = ExtensionLoader.getExtension(FlowPostProcessor.class, flowType);
+
+        this.maxConnections = maxConnections;
+        this.disuseStrategyType = disuseStrategyType;
+
     }
 
     private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
@@ -148,7 +157,8 @@ public class BaseServer implements Server {
                                             RpcConstants.CODEC_HANDLER,
                                             new RpcProviderHandler(
                                                     reflectType, enableResultCache, resultCacheExpire,
-                                                    corePoolSize, maximumPoolSize, handlerMap));
+                                                    corePoolSize, maximumPoolSize, handlerMap,
+                                                    maxConnections, disuseStrategyType));
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)
