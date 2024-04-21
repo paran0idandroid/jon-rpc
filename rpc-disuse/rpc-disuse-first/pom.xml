@@ -5,28 +5,30 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.jon.rpc</groupId>
-        <artifactId>jon-rpc</artifactId>
+        <artifactId>rpc-disuse</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>rpc-disuse</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>rpc-disuse-api</module>
-        <module>rpc-disuse-default</module>
-        <module>rpc-disuse-first</module>
-        <module>rpc-disuse-last</module>
-        <module>rpc-disuse-fifo</module>
-        <module>rpc-disuse-lfu</module>
-        <module>rpc-disuse-lru</module>
-        <module>rpc-disuse-random</module>
-        <module>rpc-disuse-refuse</module>
-    </modules>
+    <artifactId>rpc-disuse-first</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    <dependencies>
+        <dependency>
+            <groupId>io.jon.rpc</groupId>
+            <artifactId>rpc-spi</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jon.rpc</groupId>
+            <artifactId>rpc-disuse-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
 </project>

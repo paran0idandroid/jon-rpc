@@ -22,7 +22,7 @@ public class ProviderNativeDemo {
                 16,
                 "print",
                 1,
-                "strategy_default");
+                "refuse");
         singleServer.startNettyServer();
     }
 }
