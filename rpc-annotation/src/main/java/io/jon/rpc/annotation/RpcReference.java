@@ -127,6 +127,15 @@ public @interface RpcReference {
      */
     String flowType() default RpcConstants.FLOW_POST_PROCESSOR_PRINT;
 
+    /**
+     * 是否开启缓冲区
+     */
+    boolean enableBuffer() default false;
+
+    /**
+     * 缓冲区大小
+     */
+    int bufferSize() default RpcConstants.DEFAULT_BUFFER_SIZE;
 
 
 }

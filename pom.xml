@@ -31,6 +31,7 @@
         <module>rpc-flow</module>
         <module>rpc-disuse</module>
         <module>rpc-connection</module>
+        <module>rpc-buffer</module>
     </modules>
 
     <properties>

@@ -17,7 +17,7 @@ public class ConsumerDemoServiceImpl implements ConsumerDemoService {
             version = "1.0.0", group = "jon",
             serializationType = "protostuff",
             proxy = "cglib", timeout = 30000,
-            async = false, oneway = false)
+            async = false, oneway = false, enableBuffer = true)
     private DemoService demoService;
 
     @Override

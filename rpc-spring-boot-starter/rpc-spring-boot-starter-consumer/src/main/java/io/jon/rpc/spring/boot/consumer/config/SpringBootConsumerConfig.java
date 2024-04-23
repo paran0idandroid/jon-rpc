@@ -103,6 +103,16 @@ public final class SpringBootConsumerConfig {
      */
     private String flowType;
 
+    /**
+     * 是否开启缓冲区
+     */
+    private boolean enableBuffer;
+
+    /**
+     * 缓冲区大小
+     */
+    private int bufferSize;
+
 
     public SpringBootConsumerConfig() {
     }
@@ -115,7 +125,9 @@ public final class SpringBootConsumerConfig {
             final boolean enableDirectServer, final String directServerUrl,
             final boolean enableDelayConnection,
             final int corePoolSize, final int maximumPoolSize,
-            String flowType) {
+            String flowType,
+            final boolean enableBuffer, final int bufferSize
+    ) {
         this.registryAddress = registryAddress;
         this.registryType = registryType;
         this.loadBalanceType = loadBalanceType;
@@ -138,6 +150,9 @@ public final class SpringBootConsumerConfig {
         this.corePoolSize = corePoolSize;
         this.maximumPoolSize = maximumPoolSize;
         this.flowType = flowType;
+        this.enableBuffer = enableBuffer;
+        this.bufferSize = bufferSize;
+
     }
 }
 

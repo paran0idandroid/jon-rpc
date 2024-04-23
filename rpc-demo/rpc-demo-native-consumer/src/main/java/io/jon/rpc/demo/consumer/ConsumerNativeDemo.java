@@ -39,7 +39,9 @@ public class ConsumerNativeDemo {
                 true,
                 16,
                 16,
-                "print");
+                "print",
+                true,
+                2);
     }
     @Test
     public void testInterfaceRpc() throws InterruptedException {

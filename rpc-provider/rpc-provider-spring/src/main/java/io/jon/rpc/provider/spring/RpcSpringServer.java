@@ -35,7 +35,9 @@ public class RpcSpringServer extends BaseServer
             int maximumPoolSize,
             String flowType,
             int maxConnections,
-            String disuseStrategyType
+            String disuseStrategyType,
+            boolean enableBuffer,
+            int bufferSize
     ){
 
         super(
@@ -47,7 +49,8 @@ public class RpcSpringServer extends BaseServer
                 heartbeatInterval, scanNotActiveChannelInterval,
                 enableResultCache, resultCacheExpire,
                 corePoolSize, maximumPoolSize,
-                flowType, maxConnections, disuseStrategyType);
+                flowType, maxConnections, disuseStrategyType,
+                enableBuffer, bufferSize);
     }
 
     // setApplicationContext 方法通过实现 ApplicationContextAware 接口，获取了Spring容器的上下文对象

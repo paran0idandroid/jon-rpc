@@ -20,15 +20,24 @@ public class RpcConsumerInitializer extends ChannelInitializer<SocketChannel> {
     private ConcurrentThreadPool concurrentThreadPool;
 
     private FlowPostProcessor flowPostProcessor;
+
+    private boolean enableBuffer;
+    private int bufferSize;
+
     public RpcConsumerInitializer(int heartbeatInterval,
                                   ConcurrentThreadPool concurrentThreadPool,
-                                  FlowPostProcessor flowPostProcessor){
+                                  FlowPostProcessor flowPostProcessor,
+                                  boolean enableBuffer,
+                                  int bufferSize){
         if(heartbeatInterval > 0){
             this.heartbeatInterval = heartbeatInterval;
         }
         this.concurrentThreadPool = concurrentThreadPool;
 
         this.flowPostProcessor = flowPostProcessor;
+        this.enableBuffer = enableBuffer;
+        this.bufferSize = bufferSize;
+
     }
 
 
@@ -44,6 +53,6 @@ public class RpcConsumerInitializer extends ChannelInitializer<SocketChannel> {
         cp.addLast(RpcConstants.CODEC_CLIENT_IDLE_HANDLER,
                 new IdleStateHandler(
                         heartbeatInterval, 0, 0, TimeUnit.MILLISECONDS));
-        cp.addLast(new RpcConsumerHandler(concurrentThreadPool));
+        cp.addLast(new RpcConsumerHandler(concurrentThreadPool, enableBuffer, bufferSize));
     }
 }

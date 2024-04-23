@@ -102,6 +102,15 @@ public class RpcClient {
      */
     private String flowType;
 
+    /**
+     * 是否开启数据缓冲
+     */
+    private boolean enableBuffer;
+
+    /**
+     * 缓冲区大小
+     */
+    private int bufferSize;
 
 
     public RpcClient(String registryAddress, String registryType,
@@ -114,7 +123,7 @@ public class RpcClient {
                      int resultCacheExpire, boolean enableDirectServer, String directServerUrl,
                      boolean enableDelayConnection,
                      int corePoolSize, int maximumPoolSize,
-                     String flowType) {
+                     String flowType, boolean enableBuffer, int bufferSize) {
         this.serviceVersion = serviceVersion;
         this.proxy = proxy;
         this.timeout = timeout;
@@ -134,6 +143,8 @@ public class RpcClient {
         this.enableDelayConnection = enableDelayConnection;
         this.concurrentThreadPool = ConcurrentThreadPool.getInstance(corePoolSize, maximumPoolSize);
         this.flowType = flowType;
+        this.enableBuffer = enableBuffer;
+        this.bufferSize = bufferSize;
     }
 
     private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
@@ -165,6 +176,8 @@ public class RpcClient {
                         .setEnableDelayConnection(enableDelayConnection)
                         .setConcurrentThreadPool(concurrentThreadPool)
                         .setFlowPostProcessor(flowType)
+                        .setEnableBuffer(enableBuffer)
+                        .setBufferSize(bufferSize)
                         .buildNettyGroup()
                         .buildConnection(registryService),
                 serializationType,

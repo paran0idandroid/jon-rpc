@@ -65,6 +65,12 @@ public class BaseServer implements Server {
     //拒绝策略类型
     private String disuseStrategyType;
 
+    //是否开启数据缓冲
+    private boolean enableBuffer;
+    //缓冲区大小
+    private int bufferSize;
+
+
     public BaseServer(String serverAddress,
                       String registryAddress,
                       String registryType,
@@ -78,7 +84,9 @@ public class BaseServer implements Server {
                       int maximumPoolSize,
                       String flowType,
                       int maxConnections,
-                      String disuseStrategyType){
+                      String disuseStrategyType,
+                      boolean enableBuffer,
+                      int bufferSize){
 
         if(heartbeatInterval > 0){
             this.heartbeatInterval = heartbeatInterval;
@@ -107,6 +115,9 @@ public class BaseServer implements Server {
 
         this.maxConnections = maxConnections;
         this.disuseStrategyType = disuseStrategyType;
+
+        this.enableBuffer = enableBuffer;
+        this.bufferSize = bufferSize;
 
     }
 
@@ -158,7 +169,8 @@ public class BaseServer implements Server {
                                             new RpcProviderHandler(
                                                     reflectType, enableResultCache, resultCacheExpire,
                                                     corePoolSize, maximumPoolSize, handlerMap,
-                                                    maxConnections, disuseStrategyType));
+                                                    maxConnections, disuseStrategyType,
+                                                    enableBuffer, bufferSize));
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)

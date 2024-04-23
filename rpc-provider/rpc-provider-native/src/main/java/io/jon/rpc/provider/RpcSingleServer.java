@@ -17,7 +17,9 @@ public class RpcSingleServer extends BaseServer {
                            int maximumPoolSize,
                            String flowType,
                            int maxConnections,
-                           String disuseStrategyType) {
+                           String disuseStrategyType,
+                           boolean enableBuffer,
+                           int bufferSize) {
 
         super(
                 serverAddress, registryAddress,
@@ -25,7 +27,8 @@ public class RpcSingleServer extends BaseServer {
                 heartbeatInterval, scanNotActiveChannel,
                 enableResultCache, resultCacheExpire,
                 corePoolSize, maximumPoolSize,
-                flowType, maxConnections, disuseStrategyType);
+                flowType, maxConnections, disuseStrategyType,
+                enableBuffer, bufferSize);
 
         try{
             this.handlerMap = RpcServiceScanner
