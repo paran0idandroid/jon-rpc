@@ -10,10 +10,12 @@ import io.jon.rpc.registry.api.RegistryService;
 import io.jon.rpc.registry.api.config.RegistryConfig;
 import io.jon.rpc.spi.loader.ExtensionLoader;
 import io.jon.rpc.threadpool.ConcurrentThreadPool;
+import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+@Data
 public class RpcClient {
 
     private final Logger logger = LoggerFactory.getLogger(RpcClient.class);
@@ -112,6 +114,21 @@ public class RpcClient {
      */
     private int bufferSize;
 
+    /**
+     * 反射类型
+     */
+    private String reflectType;
+
+    /**
+     * 容错类Class名称
+     */
+    private String fallbackClassName;
+
+    /**
+     * 容错类
+     */
+    private Class<?> fallbackClass;
+
 
     public RpcClient(String registryAddress, String registryType,
                      String registryLoadBalanceType, String proxy,
@@ -123,7 +140,8 @@ public class RpcClient {
                      int resultCacheExpire, boolean enableDirectServer, String directServerUrl,
                      boolean enableDelayConnection,
                      int corePoolSize, int maximumPoolSize,
-                     String flowType, boolean enableBuffer, int bufferSize) {
+                     String flowType, boolean enableBuffer, int bufferSize,
+                     String reflectType, String fallbackClassName) {
         this.serviceVersion = serviceVersion;
         this.proxy = proxy;
         this.timeout = timeout;
@@ -145,6 +163,9 @@ public class RpcClient {
         this.flowType = flowType;
         this.enableBuffer = enableBuffer;
         this.bufferSize = bufferSize;
+        this.reflectType = reflectType;
+        this.fallbackClassName = fallbackClassName;
+
     }
 
     private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
@@ -182,7 +203,8 @@ public class RpcClient {
                         .buildConnection(registryService),
                 serializationType,
                 async, oneway,
-                enableResultCache, resultCacheExpire));
+                enableResultCache, resultCacheExpire,
+                reflectType, fallbackClassName, fallbackClass));
         return proxyFactory.getProxy(interfaceClass);
     }
 
@@ -204,7 +226,8 @@ public class RpcClient {
                         .buildConnection(registryService),
                 serializationType,
                 async, oneway,
-                enableResultCache, resultCacheExpire);
+                enableResultCache, resultCacheExpire,
+                reflectType, fallbackClassName, fallbackClass);
     }
 
     public void shutdown() {

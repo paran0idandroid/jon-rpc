@@ -21,7 +21,7 @@ public class ConsumerNativeDemo {
                 "127.0.0.1:2181",
                 "zookeeper",
                 "enhanced_leastconnections",
-                "cglib",
+                "asm",
                 "1.0.0",
                 "jon",
                 "protostuff",
@@ -36,18 +36,19 @@ public class ConsumerNativeDemo {
                 10000,
                 true,
                 "127.0.0.1:27880,127.0.0.1:27880,127.0.0.1:27880",
-                true,
+                false,
                 16,
                 16,
                 "print",
                 true,
-                2);
+                2,
+                "jdk",
+                "io.jon.rpc.demo.consumer.hello.FallbackDemoServiceImpl");
     }
     @Test
     public void testInterfaceRpc() throws InterruptedException {
         DemoService demoService = rpcClient.create(DemoService.class);
-        Thread.sleep(3000);
-        String result = demoService.hello("kdot");
+        String result = demoService.hello("jon");
         LOGGER.info("返回的结果数据===>>> " + result);
         //rpcClient.shutdown();
         while (true){
@@ -58,8 +59,9 @@ public class ConsumerNativeDemo {
     @Test
     public void testAsyncInterfaceRpc() throws Exception {
         IAsyncObjectProxy demoService = rpcClient.createAsync(DemoService.class);
-        RPCFuture future = demoService.call("hello", "kdot");
+        RPCFuture future = demoService.call("hello", "jon");
         LOGGER.info("返回的结果数据===>>> " + future.get());
         rpcClient.shutdown();
     }
+
 }

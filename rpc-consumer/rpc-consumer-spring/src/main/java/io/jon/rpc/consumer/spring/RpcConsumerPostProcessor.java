@@ -110,6 +110,10 @@ public class RpcConsumerPostProcessor
             builder.addPropertyValue("flowType", annotation.flowType());
             builder.addPropertyValue("enableBuffer", annotation.enableBuffer());
             builder.addPropertyValue("bufferSize", annotation.bufferSize());
+            builder.addPropertyValue("reflectType", annotation.reflectType());
+            builder.addPropertyValue("fallbackClass", annotation.fallbackClass());
+            builder.addPropertyValue("fallbackClassName", annotation.fallbackClassName());
+
 
             BeanDefinition beanDefinition = builder.getBeanDefinition();
             rpcRefBeanDefinitions.put(field.getName(), beanDefinition);

@@ -232,6 +232,16 @@ public class RpcConstants {
      */
     public static final int DEFAULT_BUFFER_SIZE = 655350;
 
+    /**
+     * 默认容错class
+     */
+    public static final Class<?> DEFAULT_FALLBACK_CLASS = void.class;
+
+    /**
+     * 默认容错class名称
+     */
+    public static final String DEFAULT_FALLBACK_CLASS_NAME = "";
 
 
+    public static final String DEFAULT_REFLECT_TYPE = "jdk";
 }

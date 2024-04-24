@@ -49,4 +49,20 @@ public class ProxyConfig<T> implements Serializable {
      */
     private int resultCacheExpire;
 
+    /**
+     * 反射类型
+     */
+    private String reflectType;
+
+    /**
+     * 容错class名称
+     */
+    private String fallbackClassName;
+
+    /**
+     * 容错class
+     */
+    private Class<?> fallbackClass;
+
+
 }
