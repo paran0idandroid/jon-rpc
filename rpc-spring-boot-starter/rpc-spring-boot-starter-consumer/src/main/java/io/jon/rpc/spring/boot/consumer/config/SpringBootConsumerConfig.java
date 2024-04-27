@@ -140,6 +140,12 @@ public final class SpringBootConsumerConfig {
      */
     private int milliSeconds;
 
+    /**
+     * 当限流失败时的处理策略
+     */
+    private String rateLimiterFailStrategy;
+
+
 
     public SpringBootConsumerConfig() {
     }
@@ -155,7 +161,9 @@ public final class SpringBootConsumerConfig {
             String flowType,
             final boolean enableBuffer, final int bufferSize,
             final String reflectType, final String fallbackClassName,
-            final boolean enableRateLimiter, final String rateLimiterType, final int permits, final int milliSeconds
+            final boolean enableRateLimiter, final String rateLimiterType, final int permits, final int milliSeconds,
+            final String rateLimiterFailStrategy
+
 
     ) {
         this.registryAddress = registryAddress;
@@ -188,6 +196,8 @@ public final class SpringBootConsumerConfig {
         this.rateLimiterType = rateLimiterType;
         this.permits = permits;
         this.milliSeconds = milliSeconds;
+        this.rateLimiterFailStrategy = rateLimiterFailStrategy;
+
 
 
     }

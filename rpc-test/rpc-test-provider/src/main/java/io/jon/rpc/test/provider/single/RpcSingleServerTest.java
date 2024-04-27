@@ -16,11 +16,20 @@ public class RpcSingleServerTest {
                 "randomweight",
                 3000,
                 6000,
-                true,
+                false,
                 30000,
                 16,
                 16,
-                "print");
+                "print",
+                1,
+                "refuse",
+                false,
+                2,
+                true,
+                "guava",
+                1,
+                1000,
+                "fallback");
         singleServer.startNettyServer();
     }
 }

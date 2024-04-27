@@ -27,8 +27,9 @@ public class ProviderNativeDemo {
                 2,
                 true,
                 "guava",
-                100,
-                1000);
+                1,
+                1000,
+                "fallback");
         singleServer.startNettyServer();
     }
 }

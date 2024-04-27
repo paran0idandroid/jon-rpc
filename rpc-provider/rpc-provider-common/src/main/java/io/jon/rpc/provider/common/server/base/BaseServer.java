@@ -79,6 +79,10 @@ public class BaseServer implements Server {
     //毫秒数
     private int milliSeconds;
 
+    //当限流失败时的处理策略
+    private String rateLimiterFailStrategy;
+
+
     public BaseServer(String serverAddress,
                       String registryAddress,
                       String registryType,
@@ -98,7 +102,8 @@ public class BaseServer implements Server {
                       boolean enableRateLimiter,
                       String rateLimiterType,
                       int permits,
-                      int milliSeconds){
+                      int milliSeconds,
+                      String rateLimiterFailStrategy){
 
         if(heartbeatInterval > 0){
             this.heartbeatInterval = heartbeatInterval;
@@ -136,6 +141,7 @@ public class BaseServer implements Server {
         this.permits = permits;
         this.milliSeconds = milliSeconds;
 
+        this.rateLimiterFailStrategy = rateLimiterFailStrategy;
 
     }
 
@@ -185,11 +191,21 @@ public class BaseServer implements Server {
                                     .addLast(
                                             RpcConstants.CODEC_HANDLER,
                                             new RpcProviderHandler(
-                                                    reflectType, enableResultCache, resultCacheExpire,
-                                                    corePoolSize, maximumPoolSize, handlerMap,
-                                                    maxConnections, disuseStrategyType,
-                                                    enableBuffer, bufferSize,
-                                                    enableRateLimiter, rateLimiterType, permits, milliSeconds));
+                                                    reflectType,
+                                                    enableResultCache,
+                                                    resultCacheExpire,
+                                                    corePoolSize,
+                                                    maximumPoolSize,
+                                                    handlerMap,
+                                                    maxConnections,
+                                                    disuseStrategyType,
+                                                    enableBuffer,
+                                                    bufferSize,
+                                                    enableRateLimiter,
+                                                    rateLimiterType,
+                                                    permits,
+                                                    milliSeconds,
+                                                    rateLimiterFailStrategy));
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)

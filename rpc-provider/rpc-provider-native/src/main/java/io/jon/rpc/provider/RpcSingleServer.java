@@ -23,7 +23,8 @@ public class RpcSingleServer extends BaseServer {
                            boolean enableRateLimiter,
                            String rateLimiterType,
                            int permits,
-                           int milliSeconds) {
+                           int milliSeconds,
+                           String rateLimiterFailStrategy) {
 
         super(
                 serverAddress, registryAddress,
@@ -33,7 +34,8 @@ public class RpcSingleServer extends BaseServer {
                 corePoolSize, maximumPoolSize,
                 flowType, maxConnections, disuseStrategyType,
                 enableBuffer, bufferSize,
-                enableRateLimiter, rateLimiterType, permits, milliSeconds);
+                enableRateLimiter, rateLimiterType, permits, milliSeconds,
+                rateLimiterFailStrategy);
 
         try{
             this.handlerMap = RpcServiceScanner

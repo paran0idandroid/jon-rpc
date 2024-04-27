@@ -157,8 +157,10 @@ public class RpcReferenceBean implements FactoryBean<Object> {
      */
     private int milliSeconds;
 
-
-
+    /**
+     * 当限流失败时的处理策略
+     */
+    private String rateLimiterFailStrategy;
 
 
     @Override
@@ -189,7 +191,8 @@ public class RpcReferenceBean implements FactoryBean<Object> {
                 flowType,
                 enableBuffer, bufferSize,
                 reflectType, fallbackClassName,
-                enableRateLimiter, rateLimiterType, permits, milliSeconds
+                enableRateLimiter, rateLimiterType, permits, milliSeconds,
+                rateLimiterFailStrategy
 
         );
 

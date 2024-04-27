@@ -46,8 +46,9 @@ public class ConsumerNativeDemo {
                 "io.jon.rpc.demo.consumer.hello.FallbackDemoServiceImpl",
                 true,
                 "guava",
-                100,
-                1000);
+                1,
+                10000,
+                "fallback");
     }
     @Test
     public void testInterfaceRpc() throws InterruptedException {

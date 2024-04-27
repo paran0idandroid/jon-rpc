@@ -146,6 +146,12 @@ public class RpcClient {
      */
     private int milliSeconds;
 
+    /**
+     * 当限流失败时的处理策略
+     */
+    private String rateLimiterFailStrategy;
+
+
 
 
     public RpcClient(String registryAddress, String registryType,
@@ -160,7 +166,9 @@ public class RpcClient {
                      int corePoolSize, int maximumPoolSize,
                      String flowType, boolean enableBuffer, int bufferSize,
                      String reflectType, String fallbackClassName,
-                     boolean enableRateLimiter, String rateLimiterType, int permits, int milliSeconds
+                     boolean enableRateLimiter, String rateLimiterType, int permits, int milliSeconds,
+                     String rateLimiterFailStrategy
+
     ) {
         this.serviceVersion = serviceVersion;
         this.proxy = proxy;
@@ -189,7 +197,7 @@ public class RpcClient {
         this.rateLimiterType = rateLimiterType;
         this.permits = permits;
         this.milliSeconds = milliSeconds;
-
+        this.rateLimiterFailStrategy = rateLimiterFailStrategy;
 
     }
 
@@ -230,7 +238,8 @@ public class RpcClient {
                 async, oneway,
                 enableResultCache, resultCacheExpire,
                 reflectType, fallbackClassName, fallbackClass,
-                enableRateLimiter, rateLimiterType, permits, milliSeconds));
+                enableRateLimiter, rateLimiterType, permits, milliSeconds,
+                rateLimiterFailStrategy));
         return proxyFactory.getProxy(interfaceClass);
     }
 
@@ -254,7 +263,8 @@ public class RpcClient {
                 async, oneway,
                 enableResultCache, resultCacheExpire,
                 reflectType, fallbackClassName, fallbackClass,
-                enableRateLimiter, rateLimiterType, permits, milliSeconds);
+                enableRateLimiter, rateLimiterType, permits, milliSeconds,
+                rateLimiterFailStrategy);
     }
 
     public void shutdown() {

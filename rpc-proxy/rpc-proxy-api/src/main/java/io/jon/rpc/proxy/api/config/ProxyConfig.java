@@ -81,4 +81,10 @@ public class ProxyConfig<T> implements Serializable {
      */
     private int milliSeconds;
 
+    /**
+     * 当限流失败时的处理策略
+     */
+    private String rateLimiterFailStrategy;
+
+
 }

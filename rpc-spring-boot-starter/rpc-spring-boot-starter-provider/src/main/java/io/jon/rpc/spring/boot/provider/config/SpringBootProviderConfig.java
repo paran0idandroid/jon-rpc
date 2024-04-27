@@ -96,54 +96,9 @@ public class SpringBootProviderConfig {
      */
     private int milliSeconds;
 
-
-
-//    public SpringBootProviderConfig() {
-//    }
-//
-//    public SpringBootProviderConfig(final String serverAddress,
-//                                    final String registryAddress,
-//                                    final String registryType,
-//                                    final String registryLoadBalanceType,
-//                                    final String reflectType,
-//                                    final int heartbeatInterval,
-//                                    int scanNotActiveChannelInterval,
-//                                    final boolean enableResultCache,
-//                                    final int resultCacheExpire,
-//                                    final int corePoolSize,
-//                                    final int maximumPoolSize,
-//                                    final String flowType,
-//                                    final int maxConnections,
-//                                    final String disuseStrategyType,
-//                                    final boolean enableBuffer,
-//                                    final int bufferSize,
-//                                    final boolean enableRateLimiter,
-//                                    final String rateLimiterType,
-//                                    final int permits,
-//                                    final int milliSeconds
-//    ) {
-//        this.serverAddress = serverAddress;
-//        this.registryAddress = registryAddress;
-//        this.registryType = registryType;
-//        this.registryLoadBalanceType = registryLoadBalanceType;
-//        this.reflectType = reflectType;
-//        if (heartbeatInterval > 0){
-//            this.heartbeatInterval = heartbeatInterval;
-//        }
-//        this.scanNotActiveChannelInterval = scanNotActiveChannelInterval;
-//        this.enableResultCache = enableResultCache;
-//        this.resultCacheExpire = resultCacheExpire;
-//        this.corePoolSize = corePoolSize;
-//        this.maximumPoolSize = maximumPoolSize;
-//        this.flowType = flowType;
-//        this.maxConnections = maxConnections;
-//        this.disuseStrategyType = disuseStrategyType;
-//        this.enableBuffer = enableBuffer;
-//        this.bufferSize = bufferSize;
-//        this.enableRateLimiter = enableRateLimiter;
-//        this.rateLimiterType = rateLimiterType;
-//        this.permits = permits;
-//        this.milliSeconds = milliSeconds;
-//    }
+    /**
+     * 当限流失败时的处理策略
+     */
+    private String rateLimiterFailStrategy;
 
 }

@@ -260,4 +260,20 @@ public class RpcConstants {
      */
     public static final int DEFAULT_RATELIMITER_MILLI_SECONDS = 1000;
 
+    /**
+     * 异常处理
+     */
+    public static final String RATE_LIMILTER_FAIL_STRATEGY_EXCEPTION = "exception";
+
+    /**
+     * 直接调用原来方法
+     */
+    public static final String RATE_LIMILTER_FAIL_STRATEGY_DIRECT = "direct";
+
+    /**
+     * 容错降级处理
+     */
+    public static final String RATE_LIMILTER_FAIL_STRATEGY_FALLBACK = "fallback";
+
+
 }
