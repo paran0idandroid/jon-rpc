@@ -22,10 +22,11 @@ public class SpringXmlConsumerTest {
     @Test
     public void testInterfaceRpc() throws InterruptedException {
         DemoService demoService = rpcClient.create(DemoService.class);
-        Thread.sleep(3000);
-        String result = demoService.hello("kdot");
-        logger.info("返回的结果数据===>>> " + result);
-        //rpcClient.shutdown();
+        for (int i = 0; i < 100; i++) {
+
+            String result = demoService.hello("kdot");
+            logger.info("返回的结果数据===>>> " + result);
+        }
         while (true){
             Thread.sleep(1000);
         }

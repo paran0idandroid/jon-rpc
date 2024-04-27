@@ -33,7 +33,7 @@ rpc:
       # retryTimes
       retryTimes: 3
       # enableResultCache
-      enableResultCache: true
+      enableResultCache: false
       # resultCacheExpire
       resultCacheExpire: 10000
       # enableDirectServer
@@ -48,6 +48,34 @@ rpc:
       maximumPoolSize: 16
       # flowType
       flowType: print
+      # enableBuffer
+      enableBuffer: false
+      # bufferSize
+      bufferSize: 40960
+      # reflectType
+      reflectType: cglib
+      # fallbackClassName
+      fallbackClassName: xxx.xxx.xxx.Xxx
+      # enableRateLimiter
+      enableRateLimiter: true
+      # rateLimiterType
+      rateLimiterType: counter
+      # permits
+      permits: 100
+      # milliSeconds
+      milliSeconds: 1000
+      # rateLimiterFailStrategy, direct/fallback/exception
+      rateLimiterFailStrategy: direct
+      # enableFusing
+      enableFusing: true
+      # fusingType: counter/percent
+      fusingType: counter
+      # totalFailure
+      totalFailure: 10
+      # fusingMilliSeconds
+      fusingMilliSeconds: 5000
+      # exceptionPostProcessorType
+      exceptionPostProcessorType: print
 
 
 

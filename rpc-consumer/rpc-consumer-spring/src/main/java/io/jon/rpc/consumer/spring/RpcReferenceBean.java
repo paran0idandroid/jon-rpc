@@ -140,6 +140,24 @@ public class RpcReferenceBean implements FactoryBean<Object> {
      */
     private Class<?> fallbackClass;
 
+    /**
+     * 是否开启限流
+     */
+    private boolean enableRateLimiter;
+    /**
+     * 限流类型
+     */
+    private String rateLimiterType;
+    /**
+     * 在milliSeconds毫秒内最多能够通过的请求个数
+     */
+    private int permits;
+    /**
+     * 毫秒数
+     */
+    private int milliSeconds;
+
+
 
 
 
@@ -170,7 +188,9 @@ public class RpcReferenceBean implements FactoryBean<Object> {
                 corePoolSize, maximumPoolSize,
                 flowType,
                 enableBuffer, bufferSize,
-                reflectType, fallbackClassName
+                reflectType, fallbackClassName,
+                enableRateLimiter, rateLimiterType, permits, milliSeconds
+
         );
 
         rpcClient.setFallbackClass(fallbackClass);

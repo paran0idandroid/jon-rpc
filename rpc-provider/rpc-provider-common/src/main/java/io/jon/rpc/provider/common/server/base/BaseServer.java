@@ -70,6 +70,14 @@ public class BaseServer implements Server {
     //缓冲区大小
     private int bufferSize;
 
+    //是否开启限流
+    private boolean enableRateLimiter;
+    //限流类型
+    private String rateLimiterType;
+    //在milliSeconds毫秒内最多能够通过的请求个数
+    private int permits;
+    //毫秒数
+    private int milliSeconds;
 
     public BaseServer(String serverAddress,
                       String registryAddress,
@@ -86,7 +94,11 @@ public class BaseServer implements Server {
                       int maxConnections,
                       String disuseStrategyType,
                       boolean enableBuffer,
-                      int bufferSize){
+                      int bufferSize,
+                      boolean enableRateLimiter,
+                      String rateLimiterType,
+                      int permits,
+                      int milliSeconds){
 
         if(heartbeatInterval > 0){
             this.heartbeatInterval = heartbeatInterval;
@@ -118,6 +130,12 @@ public class BaseServer implements Server {
 
         this.enableBuffer = enableBuffer;
         this.bufferSize = bufferSize;
+
+        this.enableRateLimiter = enableRateLimiter;
+        this.rateLimiterType = rateLimiterType;
+        this.permits = permits;
+        this.milliSeconds = milliSeconds;
+
 
     }
 
@@ -170,7 +188,8 @@ public class BaseServer implements Server {
                                                     reflectType, enableResultCache, resultCacheExpire,
                                                     corePoolSize, maximumPoolSize, handlerMap,
                                                     maxConnections, disuseStrategyType,
-                                                    enableBuffer, bufferSize));
+                                                    enableBuffer, bufferSize,
+                                                    enableRateLimiter, rateLimiterType, permits, milliSeconds));
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)

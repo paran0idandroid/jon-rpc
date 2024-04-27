@@ -32,7 +32,7 @@ public class ConsumerNativeDemo {
                 6000,
                 1000,
                 3,
-                true,
+                false,
                 10000,
                 true,
                 "127.0.0.1:27880,127.0.0.1:27880,127.0.0.1:27880",
@@ -40,16 +40,22 @@ public class ConsumerNativeDemo {
                 16,
                 16,
                 "print",
-                true,
+                false,
                 2,
                 "jdk",
-                "io.jon.rpc.demo.consumer.hello.FallbackDemoServiceImpl");
+                "io.jon.rpc.demo.consumer.hello.FallbackDemoServiceImpl",
+                true,
+                "counter",
+                100,
+                1000);
     }
     @Test
     public void testInterfaceRpc() throws InterruptedException {
         DemoService demoService = rpcClient.create(DemoService.class);
-        String result = demoService.hello("jon");
-        LOGGER.info("返回的结果数据===>>> " + result);
+        for (int i = 0; i < 100; i++) {
+            String result = demoService.hello("kdot");
+            LOGGER.info("返回的结果数据===>>> " + result);
+        }
         //rpcClient.shutdown();
         while (true){
             Thread.sleep(1000);

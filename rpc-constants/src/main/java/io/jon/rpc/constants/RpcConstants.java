@@ -244,4 +244,20 @@ public class RpcConstants {
 
 
     public static final String DEFAULT_REFLECT_TYPE = "jdk";
+
+    /**
+     * 默认限流策略
+     */
+    public static final String DEFAULT_RATELIMITER_INVOKER = "counter";
+
+    /**
+     * 默认限流阈值
+     */
+    public static final int DEFAULT_RATELIMITER_PERMITS = 100;
+
+    /**
+     * 默认限流时间值，毫秒
+     */
+    public static final int DEFAULT_RATELIMITER_MILLI_SECONDS = 1000;
+
 }

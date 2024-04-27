@@ -16,15 +16,19 @@ public class ProviderNativeDemo {
                 "randomweight",
                 3000,
                 6000,
-                true,
+                false,
                 30000,
                 16,
                 16,
                 "print",
                 1,
                 "refuse",
+                false,
+                2,
                 true,
-                2);
+                "counter",
+                100,
+                1000);
         singleServer.startNettyServer();
     }
 }

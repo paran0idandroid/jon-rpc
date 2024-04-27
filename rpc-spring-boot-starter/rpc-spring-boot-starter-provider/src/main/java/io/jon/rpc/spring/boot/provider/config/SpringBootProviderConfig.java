@@ -1,8 +1,12 @@
 package io.jon.rpc.spring.boot.provider.config;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class SpringBootProviderConfig {
 
     /**
@@ -75,45 +79,71 @@ public class SpringBootProviderConfig {
      */
     private int bufferSize;
 
+    /**
+     * 是否开启限流
+     */
+    private boolean enableRateLimiter;
+    /**
+     * 限流类型
+     */
+    private String rateLimiterType;
+    /**
+     * 在milliSeconds毫秒内最多能够通过的请求个数
+     */
+    private int permits;
+    /**
+     * 毫秒数
+     */
+    private int milliSeconds;
 
-    public SpringBootProviderConfig() {
-    }
 
-    public SpringBootProviderConfig(final String serverAddress,
-                                    final String registryAddress,
-                                    final String registryType,
-                                    final String registryLoadBalanceType,
-                                    final String reflectType,
-                                    final int heartbeatInterval,
-                                    int scanNotActiveChannelInterval,
-                                    final boolean enableResultCache,
-                                    final int resultCacheExpire,
-                                    final int corePoolSize,
-                                    final int maximumPoolSize,
-                                    final String flowType,
-                                    final int maxConnections,
-                                    final String disuseStrategyType,
-                                    final boolean enableBuffer,
-                                    final int bufferSize) {
-        this.serverAddress = serverAddress;
-        this.registryAddress = registryAddress;
-        this.registryType = registryType;
-        this.registryLoadBalanceType = registryLoadBalanceType;
-        this.reflectType = reflectType;
-        if (heartbeatInterval > 0){
-            this.heartbeatInterval = heartbeatInterval;
-        }
-        this.scanNotActiveChannelInterval = scanNotActiveChannelInterval;
-        this.enableResultCache = enableResultCache;
-        this.resultCacheExpire = resultCacheExpire;
-        this.corePoolSize = corePoolSize;
-        this.maximumPoolSize = maximumPoolSize;
-        this.flowType = flowType;
-        this.maxConnections = maxConnections;
-        this.disuseStrategyType = disuseStrategyType;
-        this.enableBuffer = enableBuffer;
-        this.bufferSize = bufferSize;
 
-    }
+//    public SpringBootProviderConfig() {
+//    }
+//
+//    public SpringBootProviderConfig(final String serverAddress,
+//                                    final String registryAddress,
+//                                    final String registryType,
+//                                    final String registryLoadBalanceType,
+//                                    final String reflectType,
+//                                    final int heartbeatInterval,
+//                                    int scanNotActiveChannelInterval,
+//                                    final boolean enableResultCache,
+//                                    final int resultCacheExpire,
+//                                    final int corePoolSize,
+//                                    final int maximumPoolSize,
+//                                    final String flowType,
+//                                    final int maxConnections,
+//                                    final String disuseStrategyType,
+//                                    final boolean enableBuffer,
+//                                    final int bufferSize,
+//                                    final boolean enableRateLimiter,
+//                                    final String rateLimiterType,
+//                                    final int permits,
+//                                    final int milliSeconds
+//    ) {
+//        this.serverAddress = serverAddress;
+//        this.registryAddress = registryAddress;
+//        this.registryType = registryType;
+//        this.registryLoadBalanceType = registryLoadBalanceType;
+//        this.reflectType = reflectType;
+//        if (heartbeatInterval > 0){
+//            this.heartbeatInterval = heartbeatInterval;
+//        }
+//        this.scanNotActiveChannelInterval = scanNotActiveChannelInterval;
+//        this.enableResultCache = enableResultCache;
+//        this.resultCacheExpire = resultCacheExpire;
+//        this.corePoolSize = corePoolSize;
+//        this.maximumPoolSize = maximumPoolSize;
+//        this.flowType = flowType;
+//        this.maxConnections = maxConnections;
+//        this.disuseStrategyType = disuseStrategyType;
+//        this.enableBuffer = enableBuffer;
+//        this.bufferSize = bufferSize;
+//        this.enableRateLimiter = enableRateLimiter;
+//        this.rateLimiterType = rateLimiterType;
+//        this.permits = permits;
+//        this.milliSeconds = milliSeconds;
+//    }
 
 }

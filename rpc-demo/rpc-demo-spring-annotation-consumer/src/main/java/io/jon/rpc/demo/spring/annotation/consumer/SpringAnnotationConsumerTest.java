@@ -12,11 +12,17 @@ public class SpringAnnotationConsumerTest {
     private static Logger logger = LoggerFactory.getLogger(SpringAnnotationConsumerTest.class);
 
     @Test
-    public void testInterfaceRpc() {
+    public void testInterfaceRpc() throws InterruptedException {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
                 SpringAnnotationConsumerConfig.class);
         ConsumerDemoService consumerDemoService = context.getBean(ConsumerDemoService.class);
-        String result = consumerDemoService.hello("kdot");
-        logger.info("返回的结果数据===>>> " + result);
+        for (int i = 0; i < 100; i++) {
+            String result = consumerDemoService.hello("kdot");
+            logger.info("返回的结果数据===>>> " + result);
+        }
+        //rpcClient.shutdown();
+        while (true){
+            Thread.sleep(1000);
+        }
     }
 }

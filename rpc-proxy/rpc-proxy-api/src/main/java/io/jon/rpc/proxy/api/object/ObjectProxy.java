@@ -11,6 +11,7 @@ import io.jon.rpc.protocol.request.RpcRequest;
 import io.jon.rpc.proxy.api.async.IAsyncObjectProxy;
 import io.jon.rpc.proxy.api.consumer.Consumer;
 import io.jon.rpc.proxy.api.future.RPCFuture;
+import io.jon.rpc.ratelimiter.api.RateLimiterInvoker;
 import io.jon.rpc.reflect.api.ReflectInvoker;
 import io.jon.rpc.registry.api.RegistryService;
 import io.jon.rpc.spi.loader.ExtensionLoader;
@@ -71,13 +72,25 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
      */
     private Class<?> fallbackClass;
 
+    /**
+     * 限流规则SPI接口
+     */
+    private RateLimiterInvoker rateLimiterInvoker;
+
+    /**
+     * 是否开启限流
+     */
+    private boolean enableRateLimiter;
+
+
     public ObjectProxy(Class<T> clazz, String serviceVersion,
                        String serviceGroup, long timeout,
                        RegistryService registryService,
                        Consumer consumer, String serializationType,
                        boolean async, boolean oneway,
                        boolean enableResultCache, int resultCacheExpire,
-                       String reflectType, String fallbackClassName, Class<?> fallbackClass) {
+                       String reflectType, String fallbackClassName, Class<?> fallbackClass,
+                       boolean enableRateLimiter, String rateLimiterType, int permits, int milliSeconds) {
         this.clazz = clazz;
         this.serviceVersion = serviceVersion;
         this.serviceGroup = serviceGroup;
@@ -95,6 +108,22 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 
         this.reflectInvoker = ExtensionLoader.getExtension(ReflectInvoker.class, reflectType);
         this.fallbackClass = this.getFallbackClass(fallbackClassName, fallbackClass);
+
+        this.enableRateLimiter = enableRateLimiter;
+        this.initRateLimiter(rateLimiterType, permits, milliSeconds);
+    }
+
+    /**
+     * 初始化限流器
+     */
+    private void initRateLimiter(String rateLimiterType, int permits, int milliSeconds){
+
+        if(enableRateLimiter){
+            rateLimiterType = StringUtils.isEmpty(rateLimiterType) ?
+                    RpcConstants.DEFAULT_RATELIMITER_INVOKER : rateLimiterType;
+            this.rateLimiterInvoker = ExtensionLoader.getExtension(RateLimiterInvoker.class, rateLimiterType);
+            this.rateLimiterInvoker.init(permits, milliSeconds);
+        }
     }
 
     /**
@@ -156,7 +185,7 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
         }
         //开启缓存，直接调用方法请求服务提供者
         if (enableResultCache) return invokeSendRequestMethodCache(method, args);
-        return invokeSendRequestMethod(method, args);
+        return invokeSendRequestMethodWithFallback(method, args);
 
     }
 
@@ -174,21 +203,53 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 
     }
 
-    private Object invokeSendRequestMethod(Method method, Object[] args) throws Exception{
+    /**
+     * 以限流方式发送请求
+     */
+    private Object invokeSendRequestMethodWithRateLimiter(Method method, Object[] args) throws Exception{
 
+        Object result = null;
+        if(enableRateLimiter){
+            if(rateLimiterInvoker.tryAcquire()){
+                try{
+                    result = invokeSendRequestMethod(method, args);
+                }finally {
+                    rateLimiterInvoker.release();
+                }
+            }else {
+                //TODO 执行各种策略
+            }
+        }else{
+            result = invokeSendRequestMethod(method, args);
+        }
+        return result;
+    }
+
+    /**
+     * 以容错方式真正发送请求
+     */
+    private Object invokeSendRequestMethodWithFallback(Method method, Object[] args) throws Exception{
         try{
-            RpcProtocol<RpcRequest> requestRpcProtocol = getSendRequest(method, args);
-
-            RPCFuture rpcFuture = this.consumer.sendRequest(requestRpcProtocol, registryService);
-            return rpcFuture == null ? null : timeout > 0 ?
-                    rpcFuture.get(timeout, TimeUnit.MILLISECONDS) : rpcFuture.get();
-        }catch (Throwable t){
-            // fallbackClass不为空，则执行容错处理
+            return invokeSendRequestMethodWithRateLimiter(method, args);
+        }catch (Throwable e){
+            //fallbackClass不为空，则执行容错处理
             if(this.isFallbackClassEmpty(fallbackClass)){
                 return null;
             }
             return getFallbackResult(method, args);
         }
+    }
+
+    /**
+     * 真正发送请求调用远程方法
+     */
+    private Object invokeSendRequestMethod(Method method, Object[] args) throws Exception{
+
+        RpcProtocol<RpcRequest> requestRpcProtocol = getSendRequest(method, args);
+
+        RPCFuture rpcFuture = this.consumer.sendRequest(requestRpcProtocol, registryService);
+        return rpcFuture == null ? null : timeout > 0 ?
+                rpcFuture.get(timeout, TimeUnit.MILLISECONDS) : rpcFuture.get();
     }
 
     // 封装请求
@@ -235,7 +296,7 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 
         Object obj = this.cacheResultManager.get(cacheResultKey);
         if(obj == null){
-            obj = invokeSendRequestMethod(method, args);
+            obj = invokeSendRequestMethodWithFallback(method, args);
             if(obj != null){
                 cacheResultKey.setCacheTimeStamp(System.currentTimeMillis());
                 this.cacheResultManager.put(cacheResultKey, obj);

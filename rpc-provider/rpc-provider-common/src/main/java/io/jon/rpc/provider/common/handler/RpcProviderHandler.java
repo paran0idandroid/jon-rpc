@@ -5,6 +5,7 @@ import io.jon.rpc.buffer.object.BufferObject;
 import io.jon.rpc.cache.result.CacheResultKey;
 import io.jon.rpc.cache.result.CacheResultManager;
 import io.jon.rpc.common.helper.RpcServiceHelper;
+import io.jon.rpc.common.utils.StringUtils;
 import io.jon.rpc.connection.manager.ConnectionManager;
 import io.jon.rpc.constants.RpcConstants;
 import io.jon.rpc.protocol.RpcProtocol;
@@ -14,6 +15,7 @@ import io.jon.rpc.protocol.header.RpcHeader;
 import io.jon.rpc.protocol.request.RpcRequest;
 import io.jon.rpc.protocol.response.RpcResponse;
 import io.jon.rpc.provider.common.cache.ProviderChannelCache;
+import io.jon.rpc.ratelimiter.api.RateLimiterInvoker;
 import io.jon.rpc.reflect.api.ReflectInvoker;
 import io.jon.rpc.spi.loader.ExtensionLoader;
 import io.jon.rpc.threadpool.BufferCacheThreadPool;
@@ -85,6 +87,15 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
      */
     private BufferCacheManager<BufferObject<RpcRequest>> bufferCacheManager;
 
+    /**
+     * 是否开启限流
+     */
+    private boolean enableRateLimiter;
+
+    /**
+     * 限流SPI接口
+     */
+    private RateLimiterInvoker rateLimiterInvoker;
 
 
     public RpcProviderHandler(String reflectType,
@@ -96,7 +107,11 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
                               int maxConnections,
                               String disuseStrategyType,
                               boolean enableBuffer,
-                              int bufferSize){
+                              int bufferSize,
+                              boolean enableRateLimiter,
+                              String rateLimiterType,
+                              int permits,
+                              int milliSeconds){
         this.handlerMap = handlerMap;
         this.reflectInvoker = ExtensionLoader.getExtension(ReflectInvoker.class, reflectType);
         this.enableResultCache = enableResultCache;
@@ -108,15 +123,38 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
         this.connectionManager = ConnectionManager.getInstance(maxConnections, disuseStrategyType);
 
         this.enableBuffer = enableBuffer;
-        // 开启数据缓冲
-        if(enableBuffer){
-            log.info("开启数据缓冲.......");
+        this.initBuffer(bufferSize);
+
+        this.enableRateLimiter = enableRateLimiter;
+        this.initRateLimiter(rateLimiterType, permits, milliSeconds);
+    }
+
+    /**
+     * 初始化限流器
+     */
+    private void initRateLimiter(String rateLimiterType, int permits, int milliSeconds){
+        if(enableRateLimiter){
+            rateLimiterType = StringUtils.isEmpty(rateLimiterType) ?
+                    RpcConstants.DEFAULT_RATELIMITER_INVOKER : rateLimiterType;
+            this.rateLimiterInvoker = ExtensionLoader.getExtension(RateLimiterInvoker.class, rateLimiterType);
+            this.rateLimiterInvoker.init(permits, milliSeconds);
+        }
+    }
+
+    /**
+     * 初始化缓冲区数据
+     */
+    private void initBuffer(int bufferSize){
+        //开启缓冲
+        if (enableBuffer){
+            logger.info("开启数据缓冲.......");
             bufferCacheManager = BufferCacheManager.getInstance(bufferSize);
-            BufferCacheThreadPool.submit(()->{
+            BufferCacheThreadPool.submit(() -> {
                 consumerBufferCache();
             });
         }
     }
+
 
     /**
      * 消费缓冲区的数据
@@ -238,7 +276,7 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
             handlerHeartbeatMessageToProvider(protocol, channel);
         }else if(header.getMsgType() == (byte) RpcType.REQUEST.getType()){
             // 请求类型消息
-            responseRpcProtocol = handlerRequestMessageWithCache(protocol, header);
+            responseRpcProtocol = handlerRequestMessageWithCacheAndRateLimiter(protocol, header);
         }
         return responseRpcProtocol;
     }
@@ -279,6 +317,29 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
         header.setStatus((byte)RpcStatus.SUCCESS.getCode());
         responseRpcProtocol.setBody(response);
         responseRpcProtocol.setHeader(header);
+        return responseRpcProtocol;
+    }
+
+    /**
+     * 带有限流模式提交请求信息
+     */
+    private RpcProtocol<RpcResponse> handlerRequestMessageWithCacheAndRateLimiter(RpcProtocol<RpcRequest> protocol, RpcHeader header){
+
+        RpcProtocol<RpcResponse> responseRpcProtocol = null;
+        if(enableRateLimiter){
+            log.info("开启了限流.......");
+            if(rateLimiterInvoker.tryAcquire()){
+                try{
+                    responseRpcProtocol = this.handlerRequestMessageWithCache(protocol, header);
+                }finally {
+                    rateLimiterInvoker.release();
+                }
+            }else {
+                //TODO 执行各种策略
+            }
+        }else{
+            responseRpcProtocol = this.handlerRequestMessageWithCache(protocol, header);
+        }
         return responseRpcProtocol;
     }
 

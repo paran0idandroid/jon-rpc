@@ -64,5 +64,21 @@ public class ProxyConfig<T> implements Serializable {
      */
     private Class<?> fallbackClass;
 
+    /**
+     * 是否开启限流
+     */
+    private boolean enableRateLimiter;
+    /**
+     * 限流类型
+     */
+    private String rateLimiterType;
+    /**
+     * 在milliSeconds毫秒内最多能够通过的请求个数
+     */
+    private int permits;
+    /**
+     * 毫秒数
+     */
+    private int milliSeconds;
 
 }

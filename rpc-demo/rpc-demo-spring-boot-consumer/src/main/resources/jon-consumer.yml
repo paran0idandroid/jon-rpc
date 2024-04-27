@@ -1,0 +1,75 @@
+bhrpc:
+  jon:
+    consumer:
+      # zookeeper server
+      registryAddress: 192.168.0.106:2181
+      # registry center type, zookeeper/nacos/apoll/etcd/eureka
+      registryType: zookeeper
+      # registry loadbalance type: zkconsistenthash
+      loadBalanceType: zkconsistenthash
+      # proxy type/javassist/jdk
+      proxy: cglib
+      # version
+      version: 1.0.0
+      # group
+      group: jon
+      # protostuff
+      serializationType: protostuff
+      # timeout
+      timeout: 30000
+      # async
+      async: false
+      # oneway
+      oneway: false
+      # heartbeatInterval
+      heartbeatInterval: 30000
+      # scanNotActiveChannelInterval
+      scanNotActiveChannelInterval: 60000
+      # retryInterval
+      retryInterval: 1000
+      # retryTimes
+      retryTimes: 3
+      # enableResultCache
+      enableResultCache: false
+      # resultCacheExpire
+      resultCacheExpire: 10000
+      # enableDirectServer
+      enableDirectServer: false
+      # directServerUrl
+      directServerUrl: 127.0.0.1:20880
+      # enableDelayConnection
+      enableDelayConnection: true
+      # corePoolSize
+      corePoolSize: 16
+      # maximumPoolSize
+      maximumPoolSize: 16
+      # flowType
+      flowType: print
+      # enableBuffer
+      enableBuffer: false
+      # bufferSize
+      bufferSize: 40960
+      # reflectType
+      reflectType: cglib
+      # fallbackClassName
+      fallbackClassName: xxx.xxx.xxx.Xxx
+      # enableRateLimiter
+      enableRateLimiter: true
+      # rateLimiterType
+      rateLimiterType: counter
+      # permits
+      permits: 100
+      # milliSeconds
+      milliSeconds: 1000
+      # rateLimiterFailStrategy, direct/fallback/exception
+      rateLimiterFailStrategy: direct
+      # enableFusing
+      enableFusing: true
+      # fusingType: counter/percent
+      fusingType: counter
+      # totalFailure
+      totalFailure: 10
+      # fusingMilliSeconds
+      fusingMilliSeconds: 5000
+      # exceptionPostProcessorType
+      exceptionPostProcessorType: print

@@ -21,7 +21,7 @@ public class RpcConsumerNativeTest {
                 "127.0.0.1:2181",
                 "zookeeper",
                 "enhanced_leastconnections",
-                "cglib",
+                "asm",
                 "1.0.0",
                 "jon",
                 "protostuff",
@@ -36,10 +36,18 @@ public class RpcConsumerNativeTest {
                 10000,
                 true,
                 "127.0.0.1:27880,127.0.0.1:27880,127.0.0.1:27880",
+                false,
+                16,
+                16,
+                "print",
                 true,
-                16,
-                16,
-                "print");
+                2,
+                "jdk",
+                "io.jon.rpc.demo.consumer.hello.FallbackDemoServiceImpl",
+                true,
+                "counter",
+                100,
+                1000);
     }
 
     public static void main(String[] args) {
@@ -48,7 +56,7 @@ public class RpcConsumerNativeTest {
                 "127.0.0.1:2181",
                 "zookeeper",
                 "enhanced_leastconnections",
-                "cglib",
+                "asm",
                 "1.0.0",
                 "jon",
                 "protostuff",
@@ -63,10 +71,18 @@ public class RpcConsumerNativeTest {
                 10000,
                 true,
                 "127.0.0.1:27880,127.0.0.1:27880,127.0.0.1:27880",
+                false,
+                16,
+                16,
+                "print",
                 true,
-                16,
-                16,
-                "print");
+                2,
+                "jdk",
+                "io.jon.rpc.demo.consumer.hello.FallbackDemoServiceImpl",
+                true,
+                "counter",
+                100,
+                1000);
         // 这里一开始就传错了
         DemoService demoService = rpcClient.create(DemoService.class);
 

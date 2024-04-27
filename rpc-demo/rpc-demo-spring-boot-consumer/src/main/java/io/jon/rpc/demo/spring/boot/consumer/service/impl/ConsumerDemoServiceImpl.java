@@ -12,7 +12,8 @@ public class ConsumerDemoServiceImpl implements ConsumerDemoService {
             /*registryAddress = "127.0.0.1:2181", initRpcClient = true,*/
             loadBalanceType = "zkconsistenthash", version = "1.0.0",
             group = "jon", serializationType = "protostuff",
-            proxy = "cglib", timeout = 30000, async = false, oneway = false)
+            proxy = "cglib", timeout = 30000, async = false, oneway = false,
+    enableBuffer = false, enableResultCache = false, enableRateLimiter = true)
     private DemoService demoService;
 
 
