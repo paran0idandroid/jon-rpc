@@ -45,7 +45,7 @@ public class ConsumerNativeDemo {
                 "jdk",
                 "io.jon.rpc.demo.consumer.hello.FallbackDemoServiceImpl",
                 true,
-                "counter",
+                "guava",
                 100,
                 1000);
     }

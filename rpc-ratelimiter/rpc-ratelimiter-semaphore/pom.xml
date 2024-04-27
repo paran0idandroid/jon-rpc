@@ -5,23 +5,24 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.jon.rpc</groupId>
-        <artifactId>jon-rpc</artifactId>
+        <artifactId>rpc-ratelimiter</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>rpc-ratelimiter</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>rpc-ratelimiter-api</module>
-        <module>rpc-ratelimiter-counter</module>
-        <module>rpc-ratelimiter-semaphore</module>
-        <module>rpc-ratelimiter-guava</module>
-    </modules>
+    <artifactId>rpc-ratelimiter-semaphore</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    <dependencies>
+        <dependency>
+            <groupId>io.jon.rpc</groupId>
+            <artifactId>rpc-ratelimiter-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
 </project>
