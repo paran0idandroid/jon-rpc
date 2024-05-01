@@ -151,6 +151,31 @@ public class RpcClient {
      */
     private String rateLimiterFailStrategy;
 
+    /**
+     * 是否开启熔断策略
+     */
+    private boolean enableFusing;
+
+    /**
+     * 熔断规则标识
+     */
+    private String fusingType;
+
+    /**
+     * 在fusingMilliSeconds毫秒内触发熔断操作的上限值
+     */
+    private double totalFailure;
+
+    /**
+     * 熔断的毫秒时长
+     */
+    private int fusingMilliSeconds;
+
+    /**
+     * 异常处理后置处理器类型
+     */
+    private String exceptionPostProcessorType;
+
 
 
 
@@ -167,7 +192,10 @@ public class RpcClient {
                      String flowType, boolean enableBuffer, int bufferSize,
                      String reflectType, String fallbackClassName,
                      boolean enableRateLimiter, String rateLimiterType, int permits, int milliSeconds,
-                     String rateLimiterFailStrategy
+                     String rateLimiterFailStrategy,
+                     boolean enableFusing, String fusingType,
+                     double totalFailure, int fusingMilliSeconds,
+                     String exceptionPostProcessorType
 
     ) {
         this.serviceVersion = serviceVersion;
@@ -198,6 +226,11 @@ public class RpcClient {
         this.permits = permits;
         this.milliSeconds = milliSeconds;
         this.rateLimiterFailStrategy = rateLimiterFailStrategy;
+        this.enableFusing = enableFusing;
+        this.fusingType = fusingType;
+        this.totalFailure = totalFailure;
+        this.fusingMilliSeconds = fusingMilliSeconds;
+        this.exceptionPostProcessorType = exceptionPostProcessorType;
 
     }
 
@@ -239,7 +272,10 @@ public class RpcClient {
                 enableResultCache, resultCacheExpire,
                 reflectType, fallbackClassName, fallbackClass,
                 enableRateLimiter, rateLimiterType, permits, milliSeconds,
-                rateLimiterFailStrategy));
+                rateLimiterFailStrategy,
+                enableFusing, fusingType,
+                totalFailure, fusingMilliSeconds,
+                exceptionPostProcessorType));
         return proxyFactory.getProxy(interfaceClass);
     }
 
@@ -264,7 +300,10 @@ public class RpcClient {
                 enableResultCache, resultCacheExpire,
                 reflectType, fallbackClassName, fallbackClass,
                 enableRateLimiter, rateLimiterType, permits, milliSeconds,
-                rateLimiterFailStrategy);
+                rateLimiterFailStrategy,
+                enableFusing, fusingType,
+                totalFailure, fusingMilliSeconds,
+                exceptionPostProcessorType);
     }
 
     public void shutdown() {

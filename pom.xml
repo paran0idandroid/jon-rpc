@@ -33,6 +33,8 @@
         <module>rpc-connection</module>
         <module>rpc-buffer</module>
         <module>rpc-ratelimiter</module>
+        <module>rpc-fusing</module>
+        <module>rpc-exception</module>
     </modules>
 
     <properties>

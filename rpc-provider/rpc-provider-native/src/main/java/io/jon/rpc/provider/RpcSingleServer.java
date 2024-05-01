@@ -24,7 +24,13 @@ public class RpcSingleServer extends BaseServer {
                            String rateLimiterType,
                            int permits,
                            int milliSeconds,
-                           String rateLimiterFailStrategy) {
+                           String rateLimiterFailStrategy,
+                           boolean enableFusing,
+                           String fusingType,
+                           double totalFailure,
+                           int fusingMilliSeconds,
+                           String exceptionPostProcessorType
+    ) {
 
         super(
                 serverAddress, registryAddress,
@@ -35,7 +41,9 @@ public class RpcSingleServer extends BaseServer {
                 flowType, maxConnections, disuseStrategyType,
                 enableBuffer, bufferSize,
                 enableRateLimiter, rateLimiterType, permits, milliSeconds,
-                rateLimiterFailStrategy);
+                rateLimiterFailStrategy,
+                enableFusing, fusingType, totalFailure, fusingMilliSeconds,
+                exceptionPostProcessorType);
 
         try{
             this.handlerMap = RpcServiceScanner

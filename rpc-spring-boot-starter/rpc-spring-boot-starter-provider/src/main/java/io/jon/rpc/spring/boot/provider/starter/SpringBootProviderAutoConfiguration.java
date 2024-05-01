@@ -41,7 +41,12 @@ public class SpringBootProviderAutoConfiguration {
                 springBootProviderConfig.getRateLimiterType(),
                 springBootProviderConfig.getPermits(),
                 springBootProviderConfig.getMilliSeconds(),
-                springBootProviderConfig.getRateLimiterFailStrategy()
+                springBootProviderConfig.getRateLimiterFailStrategy(),
+                springBootProviderConfig.isEnableFusing(),
+                springBootProviderConfig.getFusingType(),
+                springBootProviderConfig.getTotalFailure(),
+                springBootProviderConfig.getFusingMilliSeconds()
+
         );
     }
 }

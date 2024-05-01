@@ -182,6 +182,30 @@ public class SpringBootConsumerAutoConfiguration {
             referenceBean.setRateLimiterFailStrategy(springBootConsumerConfig.getRateLimiterFailStrategy());
         }
 
+        if (!referenceBean.isEnableFusing()){
+            referenceBean.setEnableFusing(springBootConsumerConfig.isEnableFusing());
+        }
+
+        if (StringUtils.isEmpty(referenceBean.getFusingType())
+                || (RpcConstants.DEFAULT_FUSING_INVOKER.equals(referenceBean.getFusingType()) && !StringUtils.isEmpty(springBootConsumerConfig.getFusingType()))){
+            referenceBean.setFusingType(springBootConsumerConfig.getFusingType());
+        }
+
+        if (referenceBean.getTotalFailure() <= 0
+                || (RpcConstants.DEFAULT_FUSING_TOTAL_FAILURE == referenceBean.getTotalFailure() && springBootConsumerConfig.getTotalFailure() > 0 )){
+            referenceBean.setTotalFailure(springBootConsumerConfig.getTotalFailure());
+        }
+
+        if (referenceBean.getFusingMilliSeconds() <= 0
+                || (RpcConstants.DEFAULT_FUSING_MILLI_SECONDS == referenceBean.getFusingMilliSeconds() && springBootConsumerConfig.getFusingMilliSeconds() > 0)){
+            referenceBean.setFusingMilliSeconds(springBootConsumerConfig.getFusingMilliSeconds());
+        }
+
+        if (StringUtils.isEmpty(referenceBean.getExceptionPostProcessorType())
+                || (RpcConstants.EXCEPTION_POST_PROCESSOR_PRINT.equals(referenceBean.getExceptionPostProcessorType()) && !StringUtils.isEmpty(springBootConsumerConfig.getExceptionPostProcessorType()))){
+            referenceBean.setExceptionPostProcessorType(springBootConsumerConfig.getExceptionPostProcessorType());
+        }
+
         return referenceBean;
     }
 

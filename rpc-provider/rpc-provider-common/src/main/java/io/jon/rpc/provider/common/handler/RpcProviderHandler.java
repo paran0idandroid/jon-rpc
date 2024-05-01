@@ -8,6 +8,8 @@ import io.jon.rpc.common.helper.RpcServiceHelper;
 import io.jon.rpc.common.utils.StringUtils;
 import io.jon.rpc.connection.manager.ConnectionManager;
 import io.jon.rpc.constants.RpcConstants;
+import io.jon.rpc.exception.processor.ExceptionPostProcessor;
+import io.jon.rpc.fusing.api.FusingInvoker;
 import io.jon.rpc.protocol.RpcProtocol;
 import io.jon.rpc.protocol.enumeration.RpcStatus;
 import io.jon.rpc.protocol.enumeration.RpcType;
@@ -102,6 +104,20 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
      */
     private String rateLimiterFailStrategy;
 
+    /**
+     * 是否开启熔断
+     */
+    private boolean enableFusing;
+
+    /**
+     * 熔断SPI接口
+     */
+    private FusingInvoker fusingInvoker;
+
+    /**
+     * 异常处理后置处理器
+     */
+    private ExceptionPostProcessor exceptionPostProcessor;
 
 
     public RpcProviderHandler(String reflectType,
@@ -118,7 +134,12 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
                               String rateLimiterType,
                               int permits,
                               int milliSeconds,
-                              String rateLimiterFailStrategy){
+                              String rateLimiterFailStrategy,
+                              boolean enableFusing,
+                              String fusingType,
+                              double totalFailure,
+                              int fusingMilliSeconds,
+                              String exceptionPostProcessorType){
         this.handlerMap = handlerMap;
         this.reflectInvoker = ExtensionLoader.getExtension(ReflectInvoker.class, reflectType);
         this.enableResultCache = enableResultCache;
@@ -135,6 +156,22 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
         this.enableRateLimiter = enableRateLimiter;
         this.initRateLimiter(rateLimiterType, permits, milliSeconds);
         this.rateLimiterFailStrategy = rateLimiterFailStrategy;
+
+        this.enableFusing = enableFusing;
+        this.initFusing(fusingType, totalFailure, fusingMilliSeconds);
+
+        this.exceptionPostProcessor = ExtensionLoader.getExtension(ExceptionPostProcessor.class, exceptionPostProcessorType);
+    }
+
+    /**
+     * 初始化熔断SPI接口
+     */
+    private void initFusing(String fusingType, double totalFailure, int fusingMilliSeconds) {
+        if(enableFusing){
+            fusingType = StringUtils.isEmpty(fusingType) ? RpcConstants.DEFAULT_FUSING_INVOKER : fusingType;
+            this.fusingInvoker = ExtensionLoader.getExtension(FusingInvoker.class, fusingType);
+            this.fusingInvoker.init(totalFailure, fusingMilliSeconds);
+        }
     }
 
     /**
@@ -289,6 +326,50 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
         return responseRpcProtocol;
     }
 
+    /**
+     * 开启熔断策略时调用的方法
+     */
+    private RpcProtocol<RpcResponse> handlerFusingRequestMessage(RpcProtocol<RpcRequest> protocol, RpcHeader header){
+
+        // 如果触发了熔断的规则，则直接返回降级处理数据
+
+        log.info("=======>触发了熔断的规则，直接返回降级处理数据<=======");
+        if(fusingInvoker.invokeFusingStrategy()){
+            return handlerFallbackMessage(protocol);
+        }
+
+        // 请求计数加1
+        fusingInvoker.incrementCount();
+
+        // 调用handlerRequestMessage()方法获取数据
+        // 开始探测真实服务
+        log.info("=======>开始探测真实服务<=======");
+        RpcProtocol<RpcResponse> responseRpcProtocol = handlerRequestMessage(protocol, header);
+        if(responseRpcProtocol == null) return null;
+
+
+        if(responseRpcProtocol.getHeader().getStatus() == (byte) RpcStatus.FAIL.getCode()){
+            log.info("=======>探测服务失败，调用markFailed<=======");
+            fusingInvoker.markFailed();
+        }else{
+            log.info("=======>探测服务成功，调用markSuccess<=======");
+            fusingInvoker.markSuccess();
+        }
+
+        return responseRpcProtocol;
+    }
+
+    /**
+     * 结合服务熔断请求方法
+     */
+    private RpcProtocol<RpcResponse> handlerRequestMessageWithFusing(RpcProtocol<RpcRequest> protocol, RpcHeader header){
+        if (enableFusing){
+            return handlerFusingRequestMessage(protocol, header);
+        }else {
+            return handlerRequestMessage(protocol, header);
+        }
+    }
+
     private RpcProtocol<RpcResponse> handlerRequestMessage(RpcProtocol<RpcRequest> protocol, RpcHeader header) {
 
         RpcRequest request = protocol.getBody();
@@ -302,6 +383,7 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
             response.setAsync(request.isAsync());
             header.setStatus((byte) RpcStatus.SUCCESS.getCode());
         }catch (Throwable t){
+            exceptionPostProcessor.postExceptionProcessor(t);
             response.setError(t.toString());
             header.setStatus((byte) RpcStatus.FAIL.getCode());
             log.error("RPC Server handler request error: ", t);
@@ -398,20 +480,24 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 
         RpcProtocol<RpcResponse> responseRpcProtocol = cacheResultManager.get(cacheKey);
         if(responseRpcProtocol == null){
-            responseRpcProtocol = handlerRequestMessage(protocol, header);
+            responseRpcProtocol = handlerRequestMessageWithFusing(protocol, header);
             //设置保存的时间
             cacheKey.setCacheTimeStamp(System.currentTimeMillis());
             cacheResultManager.put(cacheKey, responseRpcProtocol);
         }
-        responseRpcProtocol.setHeader(header);
+        RpcHeader responseHeader = responseRpcProtocol.getHeader();
+        responseHeader.setRequestId(header.getRequestId());
+        responseRpcProtocol.setHeader(responseHeader);
         return responseRpcProtocol;
     }
 
+    /**
+     * 结合缓存处理结果
+     */
     private RpcProtocol<RpcResponse> handlerRequestMessageWithCache(RpcProtocol<RpcRequest> protocol, RpcHeader header){
-
-        header.setMsgType((byte)RpcType.RESPONSE.getType());
-        if(enableResultCache) return handlerRequestMessageCache(protocol, header);
-        return handlerRequestMessage(protocol, header);
+        header.setMsgType((byte) RpcType.RESPONSE.getType());
+        if (enableResultCache) return handlerRequestMessageCache(protocol, header);
+        return handlerRequestMessageWithFusing(protocol, header);
     }
 
     /**
@@ -464,6 +550,7 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         logger.error("server caught exception", cause);
+        exceptionPostProcessor.postExceptionProcessor(cause);
         ProviderChannelCache.remove(ctx.channel());
         connectionManager.remove(ctx.channel());
         ctx.close();

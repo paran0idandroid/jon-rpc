@@ -42,7 +42,12 @@ public class RpcSpringServer extends BaseServer
             String rateLimiterType,
             int permits,
             int milliSeconds,
-            String rateLimiterFailStrategy
+            String rateLimiterFailStrategy,
+            boolean enableFusing,
+            String fusingType,
+            double totalFailure,
+            int fusingMilliSeconds
+
     ){
 
         super(
@@ -57,7 +62,8 @@ public class RpcSpringServer extends BaseServer
                 flowType, maxConnections, disuseStrategyType,
                 enableBuffer, bufferSize,
                 enableRateLimiter, rateLimiterType, permits, milliSeconds,
-                rateLimiterFailStrategy
+                rateLimiterFailStrategy,
+                enableFusing, fusingType, totalFailure, fusingMilliSeconds
                 );
     }
 

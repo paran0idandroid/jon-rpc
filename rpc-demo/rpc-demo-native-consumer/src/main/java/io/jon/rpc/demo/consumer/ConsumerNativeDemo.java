@@ -48,7 +48,12 @@ public class ConsumerNativeDemo {
                 "guava",
                 1,
                 10000,
-                "fallback");
+                "fallback",
+                true,
+                "percent",
+                10,
+                10000,
+                "print");
     }
     @Test
     public void testInterfaceRpc() throws InterruptedException {

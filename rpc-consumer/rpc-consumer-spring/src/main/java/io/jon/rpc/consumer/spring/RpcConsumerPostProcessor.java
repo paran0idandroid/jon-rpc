@@ -118,6 +118,11 @@ public class RpcConsumerPostProcessor
             builder.addPropertyValue("permits", annotation.permits());
             builder.addPropertyValue("milliSeconds", annotation.milliSeconds());
             builder.addPropertyValue("rateLimiterFailStrategy", annotation.rateLimiterFailStrategy());
+            builder.addPropertyValue("enableFusing", annotation.enableFusing());
+            builder.addPropertyValue("fusingType", annotation.fusingType());
+            builder.addPropertyValue("totalFailure", annotation.totalFailure());
+            builder.addPropertyValue("fusingMilliSeconds", annotation.fusingMilliSeconds());
+            builder.addPropertyValue("exceptionPostProcessorType", annotation.exceptionPostProcessorType());
 
             BeanDefinition beanDefinition = builder.getBeanDefinition();
             rpcRefBeanDefinitions.put(field.getName(), beanDefinition);

@@ -101,4 +101,23 @@ public class SpringBootProviderConfig {
      */
     private String rateLimiterFailStrategy;
 
+    /**
+     * 是否开启熔断策略
+     */
+    private boolean enableFusing;
+
+    /**
+     * 熔断规则标识
+     */
+    private String fusingType;
+    /**
+     * 在fusingMilliSeconds毫秒内触发熔断操作的上限值
+     */
+    private double totalFailure;
+    /**
+     * 熔断的毫秒时长
+     */
+    private int fusingMilliSeconds;
+
+
 }

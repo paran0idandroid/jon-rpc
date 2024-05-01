@@ -223,6 +223,11 @@ public class RpcConstants {
     public static final String FLOW_POST_PROCESSOR_PRINT = "print";
 
     /**
+     * 打印异常
+     */
+    public static final String EXCEPTION_POST_PROCESSOR_PRINT = "print";
+
+    /**
      * 默认策略
      */
     public static final String RPC_CONNECTION_DISUSE_STRATEGY_DEFAULT = "strategy_default";
@@ -274,6 +279,56 @@ public class RpcConstants {
      * 容错降级处理
      */
     public static final String RATE_LIMILTER_FAIL_STRATEGY_FALLBACK = "fallback";
+
+    /**
+     * 默认熔断规则
+     */
+    public static final String DEFAULT_FUSING_INVOKER = "counter";
+
+    /**
+     * 熔断状态：关闭
+     */
+    public static final int FUSING_STATUS_CLOSED = 1;
+
+    /**
+     * 熔断状态：半开启
+     */
+    public static final int FUSING_STATUS_HALF_OPEN = 2;
+
+    /**
+     * 熔断状态：开启
+     */
+    public static final int FUSING_STATUS_OPEN = 3;
+
+    /**
+     * 初始化状态
+     */
+    public static final int FUSING_WAIT_STATUS_INIT = 0;
+
+    /**
+     * 等待
+     */
+    public static final int FUSING_WAIT_STATUS_WAITINF = 1;
+
+    /**
+     * 成功
+     */
+    public static final int FUSING_WAIT_STATUS_SUCCESS = 2;
+
+    /**
+     * 失败
+     */
+    public static final int FUSING_WAIT_STATUS_FAILED = 3;
+
+    /**
+     * 默认熔断时间值，毫秒
+     */
+    public static final int DEFAULT_FUSING_MILLI_SECONDS = 5000;
+
+    /***
+     * 默认熔断总次数或错误率
+     */
+    public static final double DEFAULT_FUSING_TOTAL_FAILURE = 10;
 
 
 }

@@ -28,9 +28,12 @@ public abstract class BaseProxyFactory<T> implements ProxyFactory{
                 proxyConfig.getRateLimiterType(),
                 proxyConfig.getPermits(),
                 proxyConfig.getMilliSeconds(),
-                proxyConfig.getRateLimiterFailStrategy()
-
-
+                proxyConfig.getRateLimiterFailStrategy(),
+                proxyConfig.isEnableFusing(),
+                proxyConfig.getFusingType(),
+                proxyConfig.getTotalFailure(),
+                proxyConfig.getFusingMilliSeconds(),
+                proxyConfig.getExceptionPostProcessorType()
         );
     }
 }
