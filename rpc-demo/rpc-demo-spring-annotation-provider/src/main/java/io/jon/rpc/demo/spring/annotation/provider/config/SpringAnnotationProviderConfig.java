@@ -75,6 +75,24 @@ public class SpringAnnotationProviderConfig {
     @Value("${server.milliSeconds}")
     private int milliSeconds;
 
+    @Value("${server.rateLimiterFailStrategy}")
+    private String rateLimiterFailStrategy;
+
+    @Value("${server.enableFusing}")
+    private boolean enableFusing;
+
+    @Value("${server.fusingType}")
+    private String fusingType;
+
+    @Value("${server.totalFailure}")
+    private double totalFailure;
+
+    @Value("${server.fusingMilliSeconds}")
+    private int fusingMilliSeconds;
+
+    @Value("${server.exceptionPostProcessorType}")
+    private String exceptionPostProcessorType;
+
     @Bean
     public RpcSpringServer rpcSpringServer(){
         return new RpcSpringServer(
@@ -88,7 +106,9 @@ public class SpringAnnotationProviderConfig {
                 corePoolSize, maximumPoolSize,
                 flowType, maxConnections, disuseStrategyType,
                 enableBuffer, bufferSize,
-                enableRateLimiter, rateLimiterType, permits, milliSeconds
+                enableRateLimiter, rateLimiterType, permits, milliSeconds,
+                rateLimiterFailStrategy, enableFusing, fusingType,
+                totalFailure, fusingMilliSeconds, exceptionPostProcessorType
         );
     }
 }

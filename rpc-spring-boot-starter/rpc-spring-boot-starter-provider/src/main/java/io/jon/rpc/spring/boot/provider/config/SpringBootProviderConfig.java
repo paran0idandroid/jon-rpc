@@ -119,5 +119,10 @@ public class SpringBootProviderConfig {
      */
     private int fusingMilliSeconds;
 
+    /**
+     * 异常处理后置处理器类型
+     */
+    private String exceptionPostProcessorType;
+
 
 }

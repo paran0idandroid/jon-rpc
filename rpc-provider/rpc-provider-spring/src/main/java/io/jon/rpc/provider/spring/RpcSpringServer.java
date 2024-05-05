@@ -46,7 +46,8 @@ public class RpcSpringServer extends BaseServer
             boolean enableFusing,
             String fusingType,
             double totalFailure,
-            int fusingMilliSeconds
+            int fusingMilliSeconds,
+            String exceptionPostProcessorType
 
     ){
 
@@ -61,10 +62,11 @@ public class RpcSpringServer extends BaseServer
                 corePoolSize, maximumPoolSize,
                 flowType, maxConnections, disuseStrategyType,
                 enableBuffer, bufferSize,
-                enableRateLimiter, rateLimiterType, permits, milliSeconds,
-                rateLimiterFailStrategy,
-                enableFusing, fusingType, totalFailure, fusingMilliSeconds
-                );
+                enableRateLimiter, rateLimiterType, permits,
+                milliSeconds,
+                rateLimiterFailStrategy, enableFusing,
+                fusingType, totalFailure, fusingMilliSeconds,
+                exceptionPostProcessorType);
     }
 
     // setApplicationContext 方法通过实现 ApplicationContextAware 接口，获取了Spring容器的上下文对象
