@@ -49,6 +49,9 @@ public class RpcConsumerPostProcessor
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
+        // 保存ApplicationContext对象，在SpringBootConsumerAutoConfiguration类中解析yml文件时
+        // 如果RpcReference对象中的值为null或者RpcReferenceBean对象中的值时@RpcReference注解的默认值
+        // 并且yml文件配置了对应的值，则再使用yml文件中的值覆盖掉解析的@RpcReference注解的值
         RpcConsumerSpringContext.getInstance().setContext(applicationContext);
     }
 
